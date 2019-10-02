@@ -1,24 +1,26 @@
 {
-  "name": "express-boilerplate",
+  "name": "macros-tracker-node",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "mocha --require test/setup.js",
     "start": "node src/server.js",
-    "predeploy": "npm audit",
+    "predeploy": "npm audit && npm run migrate-production",
     "deploy": "git push heroku master",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "migrate": "postgrator --config postgrator-config.js",
+    "migrate-production": "postgrator --config postgrator-production-config.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Miguel Ponce",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^8.1.0",
     "express": "^4.17.1",
-    "helmet": "^3.20.0",
-    "knex": "^0.19.4",
+    "helmet": "^3.21.1",
+    "knex": "^0.19.3",
     "morgan": "^1.9.1",
     "pg": "^7.12.1",
     "xss": "^1.0.6"
