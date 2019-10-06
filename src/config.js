@@ -3,5 +3,5 @@ module.exports = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   DB_URL:
     process.env.DATABASE_URL ||
-    'postgresql://dunder_mifflin:itstoasty@localhost/noteful'
+    'postgresql://dunder_mifflin:itstoasty@localhost/macros-tracker'
 };

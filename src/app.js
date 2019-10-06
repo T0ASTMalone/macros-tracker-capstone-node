@@ -4,8 +4,9 @@ const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
-const foldersRouter = require('./folders/folders-router');
-const notesRouter = require('./notes/notes-router');
+const usersRouter = require('./users/users-router');
+const foodsRouter = require('./foods/foods-router');
+const mealsRouter = require('./meals/meals-router');
 
 const app = express();
 const jsonParser = express.json();
@@ -15,8 +16,9 @@ const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
 app.use(morgan(morganOption));
 app.use(helmet());
 app.use(cors());
-app.use('/api/folders', foldersRouter);
-app.use('/api/notes', notesRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/foods', foodsRouter);
+app.use('/api/meals', mealsRouter);
 
 app.get('/', (req, res) => {
   res.status(200).send('Hello, world!');
