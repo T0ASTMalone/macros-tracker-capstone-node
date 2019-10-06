@@ -13,6 +13,9 @@
     "migrate-production": "postgrator --config postgrator-production-config.js"
   },
   "keywords": [],
+  "engines": {
+    "node": "10.16.0"
+  },
   "author": "Miguel Ponce",
   "license": "ISC",
   "dependencies": {

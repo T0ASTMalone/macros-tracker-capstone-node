@@ -42,8 +42,6 @@ mealsRouter
     const knex = req.app.get('db');
     const { user_id, meal_name, protein, carbs, fats } = req.body;
     const newMeal = { user_id, meal_name, protein, carbs, fats };
-    console.log(newMeal);
-
     for (const [key, value] of Object.entries(newMeal)) {
       if (value == null) {
         return res.status(400).json({
@@ -74,7 +72,6 @@ mealsRouter
         if (!meal) {
           return res.status(404).json({ error: { message: `Meal not found` } });
         }
-        console.log(meal);
         res.meal = meal;
         next();
       })
@@ -86,7 +83,6 @@ mealsRouter
   .delete((req, res, next) => {
     const knex = req.app.get('db');
     const id = req.params.id;
-    console.log(id);
     mealsServices
       .deleteMeal(knex, id)
       .then(() => {
@@ -98,7 +94,6 @@ mealsRouter
     const knex = req.app.get('db');
     const id = req.params.id;
     const newMealInfo = req.body;
-    console.log(newMealInfo);
     if (!newMealInfo) {
       return res.status(400).json({
         error: {
@@ -117,7 +112,6 @@ mealsRouter
 mealsRouter
   .route('/:id/foods')
   .all((req, res, next) => {
-    console.log('ran');
     const knex = req.app.get('db');
     const id = req.params.id;
     mealsServices

@@ -34,7 +34,6 @@ usersRouter
   .post(jsonParser, (req, res, next) => {
     const knex = req.app.get('db');
     const newUser = req.body;
-    console.log(newUser);
     if (!newUser) {
       return res
         .status(400)
@@ -73,7 +72,6 @@ usersRouter
   .delete((req, res, next) => {
     const knex = req.app.get('db');
     const id = req.params.id;
-    console.log(id);
     usersServices
       .deleteUser(knex, id)
       .then(() => {
@@ -85,7 +83,6 @@ usersRouter
     const knex = req.app.get('db');
     const id = req.params.id;
     const newUserInfo = req.body;
-    console.log(newUserInfo);
     if (!newUserInfo) {
       return res.status(400).json({
         error: {
