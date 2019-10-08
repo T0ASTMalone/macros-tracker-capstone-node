@@ -2,19 +2,21 @@ const path = require('path');
 const express = require('express');
 const xss = require('xss');
 const usersServices = require('./users-service');
+const macrosService = require('./macros-service');
 
 const usersRouter = express.Router();
 const jsonParser = express.json();
 
 const sanitizeUser = user => ({
   user_id: user.user_id,
+  password: user.password,
   email: xss(user.email),
   weight: xss(user.weight),
   height: xss(user.height),
   age: xss(user.age),
   goals: xss(user.goals),
   gender: xss(user.gender),
-  activity_lvl: xss(user.activity_lvl),
+  activity_lvl: user.activity_lvl,
   protein: xss(user.protein),
   carbs: xss(user.carbs),
   fats: xss(user.fats)
@@ -33,12 +35,50 @@ usersRouter
   })
   .post(jsonParser, (req, res, next) => {
     const knex = req.app.get('db');
-    const newUser = req.body;
+    const {
+      email,
+      password,
+      weight,
+      height,
+      age,
+      goals,
+      gender,
+      activity_lvl
+    } = req.body;
+
+    const newUser = {
+      email,
+      password,
+      weight,
+      height,
+      age,
+      goals,
+      gender,
+      activity_lvl
+    };
+
     if (!newUser) {
       return res
         .status(400)
         .json({ error: { message: `Missing newUser in request body` } });
     }
+    for (const [key, value] of Object.entries(newUser)) {
+      if (value == null) {
+        return res.status(400).json({
+          error: `Missing '${key}' in request body`
+        });
+      }
+    }
+
+    const passwordError = usersServices.validatePassword(password);
+    if (passwordError) {
+      return res.status(400).json({ error: passwordError });
+    }
+
+    const userMacros = macrosService.calculateUserMacros(newUser);
+
+    console.log(userMacros);
+
     usersServices
       .createUser(knex, newUser)
       .then(user => {
