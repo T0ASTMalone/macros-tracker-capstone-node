@@ -7,21 +7,6 @@ const macrosService = require('./macros-service');
 const usersRouter = express.Router();
 const jsonParser = express.json();
 
-const sanitizeUser = user => ({
-  user_id: user.user_id,
-  password: user.password,
-  email: xss(user.email),
-  weight: xss(user.weight),
-  height: xss(user.height),
-  age: xss(user.age),
-  goals: xss(user.goals),
-  gender: xss(user.gender),
-  activity_lvl: user.activity_lvl,
-  protein: xss(user.protein),
-  carbs: xss(user.carbs),
-  fats: xss(user.fats)
-});
-
 usersRouter
   .route('/')
   .get((req, res, next) => {
@@ -29,7 +14,7 @@ usersRouter
     usersServices
       .getUsers(knex)
       .then(users => {
-        res.json(users.map(user => sanitizeUser(user)));
+        res.json(users.map(user => usersServices.serializeUser(user)));
       })
       .catch(next);
   })
@@ -46,7 +31,7 @@ usersRouter
       activity_lvl
     } = req.body;
 
-    const newUser = {
+    const userInfo = {
       email,
       password,
       weight,
@@ -57,12 +42,13 @@ usersRouter
       activity_lvl
     };
 
-    if (!newUser) {
+    if (!userInfo) {
       return res
         .status(400)
         .json({ error: { message: `Missing newUser in request body` } });
     }
-    for (const [key, value] of Object.entries(newUser)) {
+
+    for (const [key, value] of Object.entries(userInfo)) {
       if (value == null) {
         return res.status(400).json({
           error: `Missing '${key}' in request body`
@@ -75,17 +61,28 @@ usersRouter
       return res.status(400).json({ error: passwordError });
     }
 
-    const userMacros = macrosService.calculateUserMacros(newUser);
-
-    console.log(userMacros);
-
     usersServices
-      .createUser(knex, newUser)
-      .then(user => {
-        res
-          .status(201)
-          .location(path.posix.join(req.originalUrl + `/${user.id}`))
-          .json(sanitizeUser(user));
+      .hasUserWithEmail(knex, email)
+      .then(hasUserWithEmail => {
+        if (hasUserWithEmail) {
+          return res.status(400).json({ error: `Email already taken` });
+        }
+
+        const userMacros = macrosService.calculateUserMacros(userInfo);
+
+        return usersServices.hashPassword(password).then(hashPassword => {
+          const newUser = {
+            ...userInfo,
+            password: hashPassword,
+            ...userMacros
+          };
+          return usersServices.createUser(knex, newUser).then(user => {
+            res
+              .status(201)
+              .location(path.posix.join(req.originalUrl + `/${user.user_id}`))
+              .json(usersServices.serializeUser(user));
+          });
+        });
       })
       .catch(next);
   });

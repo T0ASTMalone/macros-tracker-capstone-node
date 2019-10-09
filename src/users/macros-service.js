@@ -55,23 +55,23 @@ const MacrosService = {
   },
 
   calculateUserMacros(user) {
-    const { gender, goals, height, age, activityLvl } = user;
+    const { gender, goals, height, age, activity_lvl } = user;
     const weight = parseFloat(user.weight);
-
+    const usrHeight = parseFloat(height);
     let pCoef = 1;
     let fCoef = 0.4;
     let tdee;
 
     if (gender === 'male') {
-      tdee = 10 * weight + 6.25 * height - 5 * parseInt(age) + 5;
+      tdee = 10 * weight + 6.25 * usrHeight - 5 * parseInt(age) + 5;
     }
 
     if (gender === 'female') {
       fCoef = 0.3;
-      tdee = 10 * weight + 6.25 * height - 5 * parseInt(age) - 161;
+      tdee = 10 * weight + 6.25 * usrHeight - 5 * parseInt(age) - 161;
     }
 
-    tdee *= parseFloat(activityLvl);
+    tdee *= parseFloat(activity_lvl);
 
     if (goals === 'gain') {
       tdee += 500;
@@ -90,7 +90,6 @@ const MacrosService = {
     const carbs = Math.round(tdee / 4);
 
     const userMacros = { protein, carbs, fats };
-
     return userMacros;
   }
 };

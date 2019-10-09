@@ -22,8 +22,8 @@ describe.only('Users Endpoints', function() {
 
   afterEach('cleanup', () => helpers.cleanTables(db));
 
-  describe.only(`POST /api/users`, () => {
-    context.only(`User Validation`, () => {
+  describe(`POST /api/users`, () => {
+    context(`User Validation`, () => {
       beforeEach('insert users', () => helpers.seedUsers(db, testUsers));
 
       const requiredFields = [
@@ -42,12 +42,12 @@ describe.only('Users Endpoints', function() {
         const registerAttemptBody = {
           email: 'testemail@testmail.com',
           password: 'TestPassw0rd!',
-          weight: '170',
-          height: '172',
+          weight: '77.11',
+          height: '172.72',
           age: '24',
           goals: 'gain',
           gender: 'male',
-          activity_lvl: 'active'
+          activity_lvl: '1.55'
         };
 
         it(`responds with 400 required error when '${field}' is missing`, () => {
@@ -64,8 +64,14 @@ describe.only('Users Endpoints', function() {
 
         it(`responds 400 'Password be longer than 8 characters' when empty password`, () => {
           const userShortPassword = {
-            ...registerAttemptBody,
-            password: '1234567'
+            email: 'testemail@testmail.com',
+            password: '1234567',
+            weight: '77.11',
+            height: '172.72',
+            age: '24',
+            goals: 'gain',
+            gender: 'male',
+            activity_lvl: '1.55'
           };
           return supertest(app)
             .post('/api/users')
@@ -76,11 +82,15 @@ describe.only('Users Endpoints', function() {
 
         it(`responds 400 'Password be less than 72 characters' when long password`, () => {
           const userLongPassword = {
-            ...registerAttemptBody,
-            password: '*'.repeat(73)
+            email: 'testemail@testmail.com',
+            password: '*'.repeat(73),
+            weight: '77.11',
+            height: '172.72',
+            age: '24',
+            goals: 'gain',
+            gender: 'male',
+            activity_lvl: '1.55'
           };
-          // console.log(userLongPassword)
-          // console.log(userLongPassword.password.length)
           return supertest(app)
             .post('/api/users')
             .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
@@ -90,8 +100,14 @@ describe.only('Users Endpoints', function() {
 
         it(`responds 400 error when password starts with spaces`, () => {
           const userPasswordStartsSpaces = {
-            ...registerAttemptBody,
-            password: ' 1Aa!2Bb@'
+            email: 'testemail@testmail.com',
+            password: ' 1Aa!2Bb@',
+            weight: '77.11',
+            height: '172.72',
+            age: '24',
+            goals: 'gain',
+            gender: 'male',
+            activity_lvl: '1.55'
           };
           return supertest(app)
             .post('/api/users')
@@ -104,8 +120,14 @@ describe.only('Users Endpoints', function() {
 
         it(`responds 400 error when password ends with spaces`, () => {
           const userPasswordEndsSpaces = {
-            ...registerAttemptBody,
-            password: '1Aa!2Bb@ '
+            email: 'testemail@testmail.com',
+            password: '1Aa!2Bb@ ',
+            weight: '77.11',
+            height: '172.72',
+            age: '24',
+            goals: 'gain',
+            gender: 'male',
+            activity_lvl: '1.55'
           };
           return supertest(app)
             .post('/api/users')
@@ -118,8 +140,14 @@ describe.only('Users Endpoints', function() {
 
         it(`responds 400 error when password isn't complex enough`, () => {
           const userPasswordNotComplex = {
-            ...registerAttemptBody,
-            password: '11AAaabb'
+            email: 'testemail@testmail.com',
+            password: '11AAaabb',
+            weight: '77.11',
+            height: '172.72',
+            age: '24',
+            goals: 'gain',
+            gender: 'male',
+            activity_lvl: '1.55'
           };
           return supertest(app)
             .post('/api/users')
@@ -130,62 +158,63 @@ describe.only('Users Endpoints', function() {
             });
         });
 
-        it.only(`responds 400 'User name already taken' when user_name isn't unique`, () => {
+        it(`responds 400 'Email already taken' when email isn't unique`, () => {
           const duplicateUser = {
-            user_name: testUser.user_name,
-            ...registerAttemptBody
+            email: testUser.email,
+            password: 'TestPassw0rd!',
+            weight: '77.11',
+            height: '172.72',
+            age: '24',
+            goals: 'gain',
+            gender: 'male',
+            activity_lvl: '1.55'
           };
           return supertest(app)
             .post('/api/users')
             .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
             .send(duplicateUser)
-            .expect(400, { error: `Username already taken` });
+            .expect(400, { error: `Email already taken` });
         });
       });
       context(`Happy path`, () => {
         it(`responds 201, serialized user, storing bcryped password`, () => {
           const newUser = {
-            user_name: 'test user_name',
-            password: '11AAaa!!',
-            full_name: 'test full_name'
+            email: 'testemail@testemail.com',
+            password: 'TestPassw0rd!',
+            weight: '77.11',
+            height: '172.72',
+            age: '24',
+            goals: 'gain',
+            gender: 'male',
+            activity_lvl: '1.55'
           };
           return supertest(app)
             .post('/api/users')
+            .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
             .send(newUser)
             .expect(201)
             .expect(res => {
-              expect(res.body).to.have.property('id');
-              expect(res.body.user_name).to.eql(newUser.user_name);
-              expect(res.body.full_name).to.eql(newUser.full_name);
-              expect(res.body.nickname).to.eql('');
+              expect(res.body).to.have.property('user_id');
+              expect(res.body.email).to.eql(newUser.email);
+              expect(res.body.weight).to.eql(newUser.weight);
+              expect(res.body.height).to.eql(newUser.height);
+              expect(res.body.age).to.eql(newUser.age);
+              expect(res.body.goals).to.eql(newUser.goals);
+              expect(res.body.gender).to.eql(newUser.gender);
+              expect(res.body.activity_lvl).to.eql(newUser.activity_lvl);
               expect(res.body).to.not.have.property('password');
-              expect(res.headers.location).to.eql(`/api/users/${res.body.id}`);
-              const expectedDate = new Date().toLocaleString('en', {
-                timeZone: 'UTC'
-              });
-              const actualDate = new Date(
-                res.body.date_created
-              ).toLocaleString();
-              expect(actualDate).to.eql(expectedDate);
+              expect(res.headers.location).to.eql(
+                `/api/users/${res.body.user_id}`
+              );
             })
             .expect(res =>
               db
-                .from('blogful_users')
+                .from('users')
                 .select('*')
-                .where({ id: res.body.id })
+                .where('user_id', res.body.user_id)
                 .first()
                 .then(row => {
-                  expect(row.user_name).to.eql(newUser.user_name);
-                  expect(row.full_name).to.eql(newUser.full_name);
-                  expect(row.nickname).to.eql(null);
-                  const expectedDate = new Date().toLocaleString('en', {
-                    timeZone: 'UTC'
-                  });
-                  const actualDate = new Date(
-                    row.date_created
-                  ).toLocaleString();
-                  expect(actualDate).to.eql(expectedDate);
-
+                  expect(row.email).to.eql(newUser.email);
                   return bcrypt.compare(newUser.password, row.password);
                 })
                 .then(compareMatch => {

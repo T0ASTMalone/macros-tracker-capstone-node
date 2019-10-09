@@ -13,12 +13,12 @@ INSERT INTO users (
 VALUES
     ('someemail@gmail.com',
     'password',
-    170,
-    172,
+    77.11,
+    172.72,
     24,
     'gain',
     'male',
-    'active',
+    1.55,
     170,
     300,
     68);

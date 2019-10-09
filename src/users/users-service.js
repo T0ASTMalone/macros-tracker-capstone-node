@@ -1,3 +1,6 @@
+const bcrypt = require('bcryptjs');
+const xss = require('xss');
+
 const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/;
 
 const usersServices = {
@@ -18,6 +21,13 @@ const usersServices = {
   },
   getUsers(knex) {
     return knex.from('users').select('*');
+  },
+
+  hasUserWithEmail(db, email) {
+    return db('users')
+      .where({ email })
+      .first()
+      .then(user => !!user);
   },
 
   createUser(knex, newUser) {
@@ -46,6 +56,26 @@ const usersServices = {
     return knex('users')
       .where('user_id', id)
       .update(newUser);
+  },
+
+  hashPassword(password) {
+    return bcrypt.hash(password, 12);
+  },
+
+  serializeUser(user) {
+    return {
+      user_id: user.user_id,
+      email: xss(user.email),
+      weight: xss(user.weight),
+      height: xss(user.height),
+      age: xss(user.age),
+      goals: xss(user.goals),
+      gender: xss(user.gender),
+      activity_lvl: user.activity_lvl,
+      protein: xss(user.protein),
+      carbs: xss(user.carbs),
+      fats: xss(user.fats)
+    };
   }
 };
 
