@@ -3,11 +3,11 @@ const foodsServices = {
     return knex.from('food_log').select('*');
   },
 
-  getMealFoods(knex, mealId) {
+  getMealFoods(knex, meal_id) {
     return knex
       .from('food_log')
       .select('*')
-      .where('meal_id', mealId);
+      .where({ meal_id });
   },
 
   createFood(knex, newFood) {
@@ -22,19 +22,19 @@ const foodsServices = {
     return knex
       .from('food_log')
       .select('*')
-      .where('id', id)
+      .where({ id })
       .first();
   },
 
   deleteFood(knex, id) {
     return knex('food_log')
-      .where('id', id)
+      .where({ id })
       .delete();
   },
 
   updateFood(knex, id, newFood) {
     return knex('food_log')
-      .where('id', id)
+      .where({ id })
       .update(newFood);
   }
 };
