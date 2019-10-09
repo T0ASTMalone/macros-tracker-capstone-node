@@ -1,33 +1,36 @@
 const mealsServices = {
-  getmeals(knex) {
-    return knex.from('meal_log').select('*');
+  getAllUsrMeals(knex, user_id) {
+    return knex
+      .from("meal_log")
+      .select("*")
+      .where({ user_id });
   },
 
   createMeal(knex, newMeal) {
     return knex
-      .from('meal_log')
+      .from("meal_log")
       .insert(newMeal)
-      .returning('*')
+      .returning("*")
       .then(rows => rows[0]);
   },
 
-  getById(knex, id) {
+  getMealById(knex, meal_id) {
     return knex
-      .from('meal_log')
-      .select('*')
-      .where('meal_id', id)
+      .from("meal_log")
+      .select("*")
+      .where({ meal_id })
       .first();
   },
 
-  deleteMeal(knex, id) {
-    return knex('meal_log')
-      .where('meal_id', id)
+  deleteMeal(knex, meal_id) {
+    return knex("meal_log")
+      .where({ meal_id })
       .delete();
   },
 
-  updateMeal(knex, id, newMeal) {
-    return knex('meal_log')
-      .where('meal_id', id)
+  updateMeal(knex, meal_id, newMeal) {
+    return knex("meal_log")
+      .where({ meal_id })
       .update(newMeal);
   }
 };

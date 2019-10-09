@@ -1,8 +1,8 @@
-const path = require('path');
-const express = require('express');
-const xss = require('xss');
-const mealsServices = require('./meals-service');
-const foodsService = require('../foods/foods-service');
+const path = require("path");
+const express = require("express");
+const xss = require("xss");
+const mealsServices = require("./meals-service");
+const foodsService = require("../foods/foods-service");
 
 const mealsRouter = express.Router();
 const jsonParser = express.json();
@@ -28,18 +28,19 @@ const serializeFood = food => ({
 });
 
 mealsRouter
-  .route('/')
+  .route("/")
   .get((req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
+    const user_id = req.body.user_id;
     mealsServices
-      .getmeals(knex)
+      .getAllUsrMeals(knex, user_id)
       .then(meals => {
         res.json(meals.map(meal => sanitizeMeal(meal)));
       })
       .catch(next);
   })
   .post(jsonParser, (req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     const { user_id, meal_name, protein, carbs, fats } = req.body;
     const newMeal = { user_id, meal_name, protein, carbs, fats };
     for (const [key, value] of Object.entries(newMeal)) {
@@ -62,12 +63,12 @@ mealsRouter
   });
 
 mealsRouter
-  .route('/:id')
+  .route("/:id")
   .all((req, res, next) => {
-    const knex = req.app.get('db');
-    const id = req.params.id;
+    const knex = req.app.get("db");
+    const meal_id = req.params.meal_id;
     mealsServices
-      .getById(knex, id)
+      .getMealById(knex, meal_id)
       .then(meal => {
         if (!meal) {
           return res.status(404).json({ error: { message: `Meal not found` } });
@@ -81,7 +82,7 @@ mealsRouter
     res.json(sanitizeMeal(res.meal));
   })
   .delete((req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     const id = req.params.id;
     mealsServices
       .deleteMeal(knex, id)
@@ -91,7 +92,7 @@ mealsRouter
       .catch(next);
   })
   .patch(jsonParser, (req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     const id = req.params.id;
     const newMealInfo = req.body;
     if (!newMealInfo) {
@@ -110,12 +111,12 @@ mealsRouter
   });
 
 mealsRouter
-  .route('/:id/foods')
+  .route("/:id/foods")
   .all((req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     const id = req.params.id;
     mealsServices
-      .getById(knex, id)
+      .getMealById(knex, id)
       .then(meal => {
         if (!meal) {
           return res.status(404).json({ error: { message: `Meal not found` } });
@@ -126,7 +127,7 @@ mealsRouter
       .catch(next);
   })
   .get((req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     foodsService.getMealFoods(knex, res.meal).then(foods => {
       res.json(foods.map(food => serializeFood(food)));
     });
