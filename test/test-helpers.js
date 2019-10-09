@@ -284,15 +284,12 @@ function seedUsers(db, users) {
 }
 
 function seedMacroFyTables(db, users, meals, foods = []) {
-  // use a transaction to group the queries and auto rollback on any failure
   return db.transaction(async trx => {
     await seedUsers(trx, users);
     await trx.into('meal_log').insert(meals);
-    // update the auto sequence to match the forced id values
     await trx.raw(`SELECT setval('meal_log_meal_id_seq', ?)`, [
       meals[meals.length - 1].meal_id
     ]);
-    // only insert comments if there are some, also update the sequence counter
     if (foods.length) {
       await trx.into('food_log').insert(foods);
       await trx.raw(`SELECT setval('food_log_id_seq', ?)`, [
