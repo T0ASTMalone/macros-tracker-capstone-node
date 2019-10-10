@@ -1,28 +1,20 @@
 const path = require('path');
 const express = require('express');
 const knex = require('knex');
-const xss = require('xss');
 const foodsServices = require('./foods-service');
 const jsonParser = express.json();
 const foodsRouter = express.Router();
-
-const serializeFood = food => ({
-  food_id: food.id,
-  food_name: xss(food.food_name),
-  servings: xss(food.servings),
-  date_added: food.date_added,
-  meal_id: food.meal_id,
-  protein: xss(food.protein),
-  carbs: xss(food.carbs),
-  fats: xss(food.fats)
-});
+const { requireAuth } = require('../middleware/jwt-auth');
 
 foodsRouter
   .route('/')
+  .all(requireAuth)
   .get((req, res, next) => {
     foodsServices
       .getFoods(req.app.get('db'))
-      .then(foods => res.json(foods.map(food => serializeFood(food))))
+      .then(foods =>
+        res.json(foods.map(food => foodsServices.serializeFood(food)))
+      )
       .catch(next);
   })
   .post(jsonParser, (req, res, next) => {
@@ -40,13 +32,14 @@ foodsRouter
         res
           .status(201)
           .location(path.posix.join(req.originalUrl + `/${food.id}`))
-          .json(serializeFood(food))
+          .json(foodsServices.serializeFood(food))
       )
       .catch(next);
   });
 
 foodsRouter
   .route('/:id')
+  .all(requireAuth)
   .all((req, res, next) => {
     const id = req.params.id;
     foodsServices
@@ -61,7 +54,7 @@ foodsRouter
       .catch(next);
   })
   .get((req, res, next) => {
-    res.status(200).json(serializeFood(res.food));
+    res.status(200).json(foodsServices.serializeFood(res.food));
   })
   .delete((req, res, next) => {
     foodsServices

@@ -1,3 +1,5 @@
+const xss = require('xss');
+
 const foodsServices = {
   getFoods(knex) {
     return knex.from('food_log').select('*');
@@ -36,6 +38,19 @@ const foodsServices = {
     return knex('food_log')
       .where({ id })
       .update(newFood);
+  },
+
+  serializeFood(food) {
+    return {
+      food_id: food.id,
+      food_name: xss(food.food_name),
+      servings: xss(food.servings),
+      date_added: food.date_added,
+      meal_id: food.meal_id,
+      protein: xss(food.protein),
+      carbs: xss(food.carbs),
+      fats: xss(food.fats)
+    };
   }
 };
 

@@ -3,6 +3,7 @@ const express = require('express');
 const xss = require('xss');
 const usersServices = require('./users-service');
 const macrosService = require('./macros-service');
+const { requireAuth } = require('../middleware/jwt-auth');
 
 const usersRouter = express.Router();
 const jsonParser = express.json();
@@ -89,6 +90,7 @@ usersRouter
 
 usersRouter
   .route('/:id')
+  .all(requireAuth)
   .all((req, res, next) => {
     const knex = req.app.get('db');
     const id = req.params.id;
