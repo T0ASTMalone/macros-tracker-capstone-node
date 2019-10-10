@@ -23,8 +23,10 @@ describe.only('Users Endpoints', function() {
   afterEach('cleanup', () => helpers.cleanTables(db));
 
   describe.only(`POST /api/foods`, () => {
-    context.only(`Meal validation`, () => {
-      beforeEach('insert users', () => helpers.seedUsers(db, testUsers));
+    context(`Meal validation`, () => {
+      beforeEach('insert users and meals', () => {
+        helpers.seedMacroFyTables(db, testUsers, testMeals);
+      });
 
       const requiredFields = [
         'meal_id',
@@ -59,6 +61,57 @@ describe.only('Users Endpoints', function() {
               error: `Missing '${field}' in request body`
             });
         });
+      });
+    });
+
+    context('Happy Path', () => {
+      beforeEach('insert users and meals', () => {
+        helpers.seedMacroFyTables(db, testUsers, testMeals);
+      });
+
+      it(`responds 201, serialized food`, () => {
+        const testUser = testUsers[0];
+        const newFood = [
+          {
+            meal_id: 1,
+            food_name: 'test-food',
+            servings: '2',
+            protein: '2',
+            carbs: '1',
+            fats: '8'
+          }
+        ];
+
+        return supertest(app)
+          .post('/api/foods')
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .send(newFood)
+          .expect(201)
+          .expect(res => {
+            expect(res.body).to.have.property('id');
+            expect(res.body.meal_id).to.eql(newFood[0].meal_id);
+            expect(res.body.food_name).to.eql(newFood[0].food_name);
+            expect(res.body.servings).to.eql(newFood[0].servings);
+            expect(res.body.protein).to.eql(newFood[0].protein);
+            expect(res.body.carbs).to.eql(newFood[0].carbs);
+            expect(res.body.fats).to.eql(newFood[0].fats);
+            expect(res.headers.location).to.eql(`/api/foods/${res.body.id}`);
+          })
+          .expect(res =>
+            db
+              .from('food_log')
+              .select('*')
+              .where('id', res.body.id)
+              .first()
+              .then(row => {
+                expect(row).to.have.property('id');
+                expect(row.food_name).to.eql(newFood[0].food_name);
+                expect(row.servings).to.eql(parseInt(newFood[0].servings));
+                expect(row.protein).to.eql(parseInt(newFood[0].protein));
+                expect(row.carbs).to.eql(parseInt(newFood[0].carbs));
+                expect(row.fats).to.eql(parseInt(newFood[0].fats));
+              })
+          );
       });
     });
   });

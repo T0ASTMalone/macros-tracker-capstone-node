@@ -42,7 +42,7 @@ const foodsServices = {
 
   serializeFood(food) {
     return {
-      food_id: food.id,
+      id: food.id,
       food_name: xss(food.food_name),
       servings: xss(food.servings),
       date_added: food.date_added,

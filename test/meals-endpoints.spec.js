@@ -23,7 +23,6 @@ describe('Users Endpoints', function() {
   afterEach('cleanup', () => helpers.cleanTables(db));
 
   describe(`POST /api/meals`, () => {
-    console.log(testFoods);
     context(`Meal validation`, () => {
       beforeEach('insert users', () => helpers.seedUsers(db, testUsers));
 
@@ -92,11 +91,11 @@ describe('Users Endpoints', function() {
                 .where('meal_id', res.body.user_id)
                 .first()
                 .then(row => {
-                  expect(res.body).to.have.property('meal_id');
-                  expect(res.body.meal_name).to.eql(newMeal.meal_name);
-                  expect(res.body.protein).to.eql(newMeal.protein);
-                  expect(res.body.carbs).to.eql(newMeal.carbs);
-                  expect(res.body.fats).to.eql(newMeal.fats);
+                  expect(row.body).to.have.property('meal_id');
+                  expect(row.body.meal_name).to.eql(newMeal.meal_name);
+                  expect(row.body.protein).to.eql(newMeal.protein);
+                  expect(row.body.carbs).to.eql(newMeal.carbs);
+                  expect(row.body.fats).to.eql(newMeal.fats);
                 })
             );
         });
