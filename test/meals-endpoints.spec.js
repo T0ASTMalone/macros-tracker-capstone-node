@@ -23,6 +23,7 @@ describe('Users Endpoints', function() {
   afterEach('cleanup', () => helpers.cleanTables(db));
 
   describe(`POST /api/meals`, () => {
+    console.log(testFoods);
     context(`Meal validation`, () => {
       beforeEach('insert users', () => helpers.seedUsers(db, testUsers));
 

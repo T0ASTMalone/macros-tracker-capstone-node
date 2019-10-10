@@ -18,23 +18,40 @@ foodsRouter
       .catch(next);
   })
   .post(jsonParser, (req, res, next) => {
-    const { food_name, servings, meal_id, protein, carbs, fats } = req.body;
-    const newFood = { food_name, servings, meal_id, protein, carbs, fats };
-    for (const [key, value] of Object.entries(newFood)) {
-      if (value == null)
-        return res
-          .status(400)
-          .json({ error: { message: `Missing ${key} in request body` } });
+    const foods = req.body;
+
+    if (req.body.length < 1) {
+      return res
+        .status(400)
+        .json({ error: `At leas one food should be included in a meal` });
     }
-    foodsServices
-      .createFood(req.app.get('db'), newFood)
-      .then(food =>
-        res
-          .status(201)
-          .location(path.posix.join(req.originalUrl + `/${food.id}`))
-          .json(foodsServices.serializeFood(food))
-      )
-      .catch(next);
+
+    let missingKeyError;
+    foods.forEach(food => {
+      const { food_name, servings, meal_id, protein, carbs, fats } = food;
+      const newFood = { food_name, servings, meal_id, protein, carbs, fats };
+      for (const [key, value] of Object.entries(newFood)) {
+        if (value == null) {
+          missingKeyError = `Missing '${key}' in request body`;
+        }
+      }
+    });
+
+    if (missingKeyError) {
+      return res.status(400).json({ error: missingKeyError });
+    }
+
+    foods.map(verifiedFood => {
+      foodsServices
+        .createFood(req.app.get('db'), verifiedFood)
+        .then(food =>
+          res
+            .status(201)
+            .location(path.posix.join(req.originalUrl + `/${food.id}`))
+            .json(foodsServices.serializeFood(food))
+        )
+        .catch(next);
+    });
   });
 
 foodsRouter
