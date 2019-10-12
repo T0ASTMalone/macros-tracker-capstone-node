@@ -8,13 +8,6 @@ const foodsServices = {
       .where({ user_id });
   },
 
-  getMealFoods(knex, meal_id) {
-    return knex
-      .from('food_log')
-      .select('*')
-      .where({ meal_id });
-  },
-
   createFood(knex, newFood) {
     return knex
       .from('food_log')
@@ -46,13 +39,14 @@ const foodsServices = {
   serializeFood(food) {
     return {
       id: food.id,
-      food_name: xss(food.food_name),
-      servings: xss(food.servings),
-      date_added: food.date_added,
+      user_id: food.user_id,
       meal_id: food.meal_id,
+      food_name: xss(food.food_name),
+      date_added: food.date_added.toISOString().slice(0, -5) + 'Z',
       protein: xss(food.protein),
       carbs: xss(food.carbs),
-      fats: xss(food.fats)
+      fats: xss(food.fats),
+      servings: xss(food.servings)
     };
   }
 };

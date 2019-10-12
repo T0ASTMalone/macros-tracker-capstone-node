@@ -231,7 +231,7 @@ describe('Meals Endpoints', () => {
       });
     });
 
-    describe.only('GET /api/meals/:id/foods', () => {
+    describe('GET /api/meals/:id/foods', () => {
       const testUser = testUsers[0];
 
       const { maliciousMeal, expectedMeal } = helpers.makeMaliciousMeal(
@@ -273,7 +273,7 @@ describe('Meals Endpoints', () => {
         });
       });
 
-      context.only('Given xss attack foods', () => {
+      context('Given xss attack foods', () => {
         beforeEach('seed tables', () =>
           helpers.seedMacroFyTables(
             db,
@@ -284,10 +284,12 @@ describe('Meals Endpoints', () => {
         );
 
         it('removes xss content', () => {
+          const testUser = testUsers[0];
+
           return supertest(app)
-            .get(`/api/foods`)
+            .get(`/api/meals/${maliciousMeal.meal_id}/foods`)
             .set('Authorization', helpers.makeAuthHeader(testUser))
-            .send()
+            .send(testUser)
             .expect(200, expectedFood);
         });
       });

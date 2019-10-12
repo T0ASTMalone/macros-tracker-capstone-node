@@ -10,8 +10,7 @@ foodsRouter
   .route('/')
   .all(requireAuth)
   .get(jsonParser, (req, res, next) => {
-    console.log(req.body);
-    const userId = req.body;
+    const userId = req.body.user_id;
     foodsServices
       .getUserFoods(req.app.get('db'), userId)
       .then(foods =>
@@ -30,8 +29,24 @@ foodsRouter
 
     let missingKeyError;
     foods.forEach(food => {
-      const { food_name, servings, meal_id, protein, carbs, fats } = food;
-      const newFood = { food_name, servings, meal_id, protein, carbs, fats };
+      const {
+        user_id,
+        food_name,
+        servings,
+        meal_id,
+        protein,
+        carbs,
+        fats
+      } = food;
+      const newFood = {
+        user_id,
+        food_name,
+        servings,
+        meal_id,
+        protein,
+        carbs,
+        fats
+      };
       for (const [key, value] of Object.entries(newFood)) {
         if (value == null) {
           missingKeyError = `Missing '${key}' in request body`;
@@ -61,11 +76,12 @@ foodsRouter
   .all(requireAuth)
   .all((req, res, next) => {
     const id = req.params.id;
+    console.log(id);
     foodsServices
       .getById(req.app.get('db'), id)
       .then(food => {
         if (!food) {
-          return res.status(404).json({ error: { message: `Food not found` } });
+          return res.status(404).json({ error: `Food not found` });
         }
         res.food = food;
         next();
@@ -73,7 +89,7 @@ foodsRouter
       .catch(next);
   })
   .get((req, res, next) => {
-    res.status(200).json(foodsServices.serializeFood(res.food));
+    return res.status(200).json(foodsServices.serializeFood(res.food));
   })
   .delete((req, res, next) => {
     foodsServices

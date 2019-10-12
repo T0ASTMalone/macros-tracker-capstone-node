@@ -115,6 +115,7 @@ function makeFoodArray(users, meals) {
   return [
     {
       id: 1,
+      user_id: users[0].user_id,
       food_name: 'First test food!',
       meal_id: meals[0].meal_id,
       date_added: new Date('2029-01-22T16:28:32.615Z'),
@@ -125,6 +126,7 @@ function makeFoodArray(users, meals) {
     },
     {
       id: 2,
+      user_id: users[0].user_id,
       food_name: 'Second test food!',
       meal_id: meals[0].meal_id,
       date_added: new Date('2029-01-22T16:28:32.615Z'),
@@ -135,6 +137,7 @@ function makeFoodArray(users, meals) {
     },
     {
       id: 3,
+      user_id: users[0].user_id,
       food_name: 'Third test food!',
       meal_id: meals[0].meal_id,
       date_added: new Date('2029-01-22T16:28:32.615Z'),
@@ -145,6 +148,7 @@ function makeFoodArray(users, meals) {
     },
     {
       id: 4,
+      user_id: users[0].user_id,
       food_name: 'Fourth test food!',
       meal_id: meals[0].meal_id,
       date_added: new Date('2029-01-22T16:28:32.615Z'),
@@ -155,6 +159,7 @@ function makeFoodArray(users, meals) {
     },
     {
       id: 5,
+      user_id: users[3].user_id,
       food_name: 'Fifth test food!',
       meal_id: meals[meals.length - 1].meal_id,
       date_added: new Date('2029-01-22T16:28:32.615Z'),
@@ -165,6 +170,7 @@ function makeFoodArray(users, meals) {
     },
     {
       id: 6,
+      user_id: users[3].user_id,
       food_name: 'Sixth test food!',
       meal_id: meals[meals.length - 1].meal_id,
       date_added: new Date('2029-01-22T16:28:32.615Z'),
@@ -175,6 +181,7 @@ function makeFoodArray(users, meals) {
     },
     {
       id: 7,
+      user_id: users[3].user_id,
       food_name: 'Seventh test food!',
       meal_id: meals[3].meal_id,
       date_added: new Date('2029-01-22T16:28:32.615Z'),
@@ -218,6 +225,7 @@ function makeExpectedMealFoods(mealId, foods) {
   return expectedFoods.map(food => {
     return {
       id: food.id,
+      user_id: food.user_id,
       date_added: food.date_added.toISOString(),
       food_name: food.food_name,
       meal_id: food.meal_id,
@@ -273,7 +281,7 @@ function makeMaliciousFood(user, meal_id) {
   const expectedFood = maliciousFood.map(food => {
     return {
       ...makeExpectedFood(user, meal_id, food),
-      meal_name:
+      food_name:
         'Naughty naughty very naughty &lt;script&gt;alert("xss");&lt;/script&gt;'
     };
   });

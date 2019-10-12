@@ -19,10 +19,11 @@ const sanitizeMeal = meal => ({
 });
 
 const serializeFood = food => ({
-  food_id: food.id,
+  id: food.id,
   food_name: xss(food.food_name),
+  user_id: food.user_id,
   servings: xss(food.servings),
-  date_added: food.date_added,
+  date_added: food.date_added.toISOString().slice(0, -5) + 'Z',
   meal_id: food.meal_id,
   protein: xss(food.protein),
   carbs: xss(food.carbs),
@@ -134,7 +135,7 @@ mealsRouter
   .get((req, res, next) => {
     const knex = req.app.get('db');
     mealsServices.getMealFoods(knex, res.meal).then(foods => {
-      return res.status(200).json(foods);
+      return res.status(200).json(foods.map(food => serializeFood(food)));
     });
   });
 

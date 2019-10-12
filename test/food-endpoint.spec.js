@@ -1,9 +1,8 @@
 const knex = require('knex');
 const app = require('../src/app');
 const helpers = require('./test-helpers');
-const bcrypt = require('bcryptjs');
 
-describe('Foods Endpoints', () => {
+describe.only('Foods Endpoints', () => {
   let db;
 
   const { testUsers, testMeals, testFoods } = helpers.makeMacroFyFixtures();
@@ -22,14 +21,71 @@ describe('Foods Endpoints', () => {
 
   afterEach('cleanup', () => helpers.cleanTables(db));
 
+  describe(`GET /api/foods/:id`, () => {
+    const testUser = testUsers[0];
+    const { maliciousMeal, expectedMeal } = helpers.makeMaliciousMeal(testUser);
+    const { maliciousFood, expectedFood } = helpers.makeMaliciousFood(
+      testUser,
+      maliciousMeal.meal_id
+    );
+    context('Given there are no foods in the db', () => {
+      beforeEach('seed users', () => helpers.seedUsers(db, testUsers));
+      const testUser = testUsers[0];
+
+      it('returns 404 food not found', () => {
+        return supertest(app)
+          .get('/api/foods/3')
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .expect(404, { error: 'Food not found' });
+      });
+    });
+
+    context('Given there are foods in the db', () => {
+      beforeEach('seed tables', () =>
+        helpers.seedMacroFyTables(db, testUsers, testMeals, testFoods)
+      );
+
+      it('responds with 200 and the specified food', () => {
+        const foodId = testFoods[1].id;
+        const testUser = testUsers[0];
+        const expectedFood = helpers.makeExpectedFood(
+          testUser,
+          testFoods[foodId - 1].meal_id,
+          testFoods[foodId - 1]
+        );
+        console.log(foodId);
+        return supertest(app)
+          .get(`/api/foods/${foodId}`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .expect(200, expectedFood);
+      });
+    });
+
+    context('Given an xss attack', () => {
+      beforeEach('seed tables', () =>
+        helpers.seedMacroFyTables(db, testUsers, [maliciousMeal], maliciousFood)
+      );
+
+      it('removes xss content', () => {
+        const testUser = testUsers[0];
+
+        return supertest(app)
+          .get(`/api/foods/${maliciousFood[0].id}`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .send(testUser)
+          .expect(200, expectedFood[0]);
+      });
+    });
+  });
+
   describe(`POST /api/foods`, () => {
     context(`Food validation`, () => {
       beforeEach('insert users and meals', () =>
         helpers.seedMacroFyTables(db, testUsers, testMeals)
       );
-      //add user_id to required field
       const requiredFields = [
         'meal_id',
+        'user_id',
         'food_name',
         'servings',
         'protein',
@@ -40,10 +96,10 @@ describe('Foods Endpoints', () => {
       const testUser = testUsers[0];
 
       requiredFields.forEach(field => {
-        //add user_id to required field
         const foodsPostAttempt = [
           {
             meal_id: 1,
+            user_id: 1,
             food_name: 'test-food',
             servings: '2',
             protein: '2',
@@ -69,6 +125,7 @@ describe('Foods Endpoints', () => {
           const testFood = [
             {
               meal_id: 1,
+              user_id: 1,
               food_name: 'test-food',
               servings: '2',
               protein: '2',
@@ -84,6 +141,7 @@ describe('Foods Endpoints', () => {
             .expect(res => {
               expect(res.body).to.have.property('id');
               expect(res.body.meal_id).to.eql(testFood[0].meal_id);
+              expect(res.body.user_id).to.eql(testFood[0].user_id);
               expect(res.body.food_name).to.eql(testFood[0].food_name);
               expect(res.body.protein).to.eql(testFood[0].protein);
               expect(res.body.carbs).to.eql(testFood[0].carbs);
@@ -115,15 +173,13 @@ describe('Foods Endpoints', () => {
     );
 
     context(`Given there are no foods in the db`, () => {
-      //alter foods table to have a foreign key that references the user_id
       const testUser = testUsers[0];
-      const user_id = testUser.user_id;
-      const user = { user_id };
+
       it('GET /api/foods responds with 200 and an empty list', () => {
         return supertest(app)
           .get('/api/foods')
           .set('Authorization', helpers.makeAuthHeader(testUser))
-          .send(user)
+          .send(testUser)
           .expect(200);
       });
     });
