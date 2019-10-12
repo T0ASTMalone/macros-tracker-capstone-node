@@ -3,7 +3,7 @@ const app = require('../src/app');
 const helpers = require('./test-helpers');
 const bcrypt = require('bcryptjs');
 
-describe.only('Users Endpoints', function() {
+describe('Foods Endpoints', () => {
   let db;
 
   const { testUsers, testMeals, testFoods } = helpers.makeMacroFyFixtures();
@@ -24,10 +24,10 @@ describe.only('Users Endpoints', function() {
 
   describe(`POST /api/foods`, () => {
     context(`Food validation`, () => {
-      beforeEach('insert users', () =>
+      beforeEach('insert users and meals', () =>
         helpers.seedMacroFyTables(db, testUsers, testMeals)
       );
-
+      //add user_id to required field
       const requiredFields = [
         'meal_id',
         'food_name',
@@ -40,6 +40,7 @@ describe.only('Users Endpoints', function() {
       const testUser = testUsers[0];
 
       requiredFields.forEach(field => {
+        //add user_id to required field
         const foodsPostAttempt = [
           {
             meal_id: 1,
@@ -104,6 +105,26 @@ describe.only('Users Endpoints', function() {
                 })
             );
         });
+      });
+    });
+  });
+
+  describe(`GET /api/foods`, () => {
+    beforeEach('insert users and meals', () =>
+      helpers.seedMacroFyTables(db, testUsers, testMeals)
+    );
+
+    context(`Given there are no foods in the db`, () => {
+      //alter foods table to have a foreign key that references the user_id
+      const testUser = testUsers[0];
+      const user_id = testUser.user_id;
+      const user = { user_id };
+      it('GET /api/foods responds with 200 and an empty list', () => {
+        return supertest(app)
+          .get('/api/foods')
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .send(user)
+          .expect(200);
       });
     });
   });

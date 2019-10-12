@@ -3,7 +3,7 @@ const app = require('../src/app');
 const helpers = require('./test-helpers');
 const bcrypt = require('bcryptjs');
 
-describe('Users Endpoints', function() {
+describe.only('Meals Endpoints', () => {
   let db;
 
   const { testUsers, testMeals, testFoods } = helpers.makeMacroFyFixtures();
@@ -99,6 +99,107 @@ describe('Users Endpoints', function() {
                 })
             );
         });
+      });
+    });
+  });
+
+  describe(`GET /api/meals`, () => {
+    beforeEach('insert users and meals', () =>
+      helpers.seedUsers(db, testUsers)
+    );
+
+    context(`Given there are no meals in the db`, () => {
+      const testUser = testUsers[0];
+      const user_id = testUser.user_id;
+      const user = { user_id };
+
+      it('GET /api/meals responds with 200 and an empty list', () => {
+        return supertest(app)
+          .get('/api/meals')
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .send(user)
+          .expect(200, []);
+      });
+    });
+
+    context('Given there are meals in the db', () => {
+      beforeEach('insert meals', () => db.into('meal_log').insert(testMeals));
+      const testUser = testUsers[0];
+      const user_id = testUser.user_id;
+      const user = { user_id };
+      const userMeals = testMeals.filter(meal => meal.user_id === user_id);
+      const expectedMeals = userMeals.map(meal =>
+        helpers.makeExpectedMeal(testUser, meal)
+      );
+      it('GET /api/meals responds with 200 and the users meals', () => {
+        return supertest(app)
+          .get('/api/meals')
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .send(user)
+          .expect(200)
+          .expect(expectedMeals);
+      });
+    });
+  });
+
+  describe('GET /api/meals/:id', () => {
+    beforeEach('insert users', () => helpers.seedUsers(db, testUsers));
+
+    context('Given there are no meals in the db', () => {
+      const testUser = testUsers[0];
+
+      it(`Responds with 404 meal not found`, () => {
+        const mealId = 123;
+        return supertest(app)
+          .get(`/api/meals/${mealId}`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .expect(404, { error: `Meal not found` });
+      });
+    });
+
+    context('Given there are meals in the db', () => {
+      beforeEach('insert users', () => db.into('meal_log').insert(testMeals));
+
+      const testUser = testUsers[0];
+
+      it('Responds with 200 and a meal', () => {
+        const mealId = 1;
+        const expectedMeal = helpers.makeExpectedMeal(
+          testUser,
+          testMeals[mealId - 1]
+        );
+        return supertest(app)
+          .get(`/api/meals/${mealId}`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .expect(200, expectedMeal);
+      });
+
+      it('Responds with 400 meal not found', () => {
+        const mealId = 100;
+        return supertest(app)
+          .get(`/api/meals/${mealId}`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .expect(404, { error: `Meal not found` });
+      });
+    });
+
+    context('Given an xss attack meal', () => {
+      const testUser = testUsers[0];
+
+      const { maliciousMeal, expectedMeal } = helpers.makeMaliciousMeal(
+        testUser
+      );
+      console.log(maliciousMeal, expectedMeal);
+
+      beforeEach('seed malicious meal', () => {
+        db.into('meal_log').insert(maliciousMeal);
+      });
+
+      it(`removes xss attack content`, () => {
+        return supertest(app)
+          .get(`/api/meals/${maliciousMeal.meal_id}`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .expect(200, expectedMeal);
       });
     });
   });

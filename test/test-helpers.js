@@ -82,7 +82,7 @@ function makeMealsArray() {
       fats: 15
     },
     {
-      user_id: 2,
+      user_id: 1,
       meal_id: 2,
       meal_name: 'Second test meal',
       date_added: new Date('2029-01-22T16:28:32.615Z'),
@@ -187,14 +187,15 @@ function makeFoodArray(users, meals) {
 }
 
 function makeExpectedMeal(users, meal) {
+  console.log(users);
   return {
     user_id: users.user_id,
     meal_id: meal.meal_id,
     meal_name: meal.meal_name,
     date_added: meal.date_added.toISOString(),
-    protein: meal.protein,
-    carbs: meal.carbs,
-    fats: meal.fats
+    protein: meal.protein.toString(),
+    carbs: meal.carbs.toString(),
+    fats: meal.fats.toString()
   };
 }
 
@@ -207,10 +208,10 @@ function makeExpectedMealFoods(users, mealId, foods) {
       date_added: food.date_added.toISOString(),
       food_name: food.food_name,
       meal_id: food.meal_id,
-      protein: food.protein,
-      carbs: food.carbs,
-      fats: food.fats,
-      servings: food.servings
+      protein: food.protein.toString(),
+      carbs: food.carbs.toString(),
+      fats: food.fats.toString(),
+      servings: food.servings.toString()
     };
   });
 }
@@ -273,6 +274,7 @@ function seedUsers(db, users) {
     ...user,
     password: bcrypt.hashSync(user.password, 1)
   }));
+
   return db
     .into('users')
     .insert(preppedUsers)

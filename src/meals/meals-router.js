@@ -34,7 +34,7 @@ mealsRouter
   .all(requireAuth)
   .get((req, res, next) => {
     const knex = req.app.get('db');
-    const user_id = req.body.user_id;
+    const user_id = req.user.user_id;
     mealsServices
       .getAllUsrMeals(knex, user_id)
       .then(meals => {
@@ -71,7 +71,8 @@ mealsRouter
   .all(requireAuth)
   .all((req, res, next) => {
     const knex = req.app.get('db');
-    const meal_id = req.params.meal_id;
+    const meal_id = req.params.id;
+    console.log(meal_id);
     mealsServices
       .getMealById(knex, meal_id)
       .then(meal => {

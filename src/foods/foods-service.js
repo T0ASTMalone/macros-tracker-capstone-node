@@ -1,8 +1,11 @@
 const xss = require('xss');
 
 const foodsServices = {
-  getFoods(knex) {
-    return knex.from('food_log').select('*');
+  getUserFoods(knex, user_id) {
+    return knex
+      .from('food_log')
+      .select('*')
+      .where({ user_id });
   },
 
   getMealFoods(knex, meal_id) {

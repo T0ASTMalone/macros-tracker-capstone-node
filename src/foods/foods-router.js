@@ -9,9 +9,11 @@ const { requireAuth } = require('../middleware/jwt-auth');
 foodsRouter
   .route('/')
   .all(requireAuth)
-  .get((req, res, next) => {
+  .get(jsonParser, (req, res, next) => {
+    console.log(req.body);
+    const userId = req.body;
     foodsServices
-      .getFoods(req.app.get('db'))
+      .getUserFoods(req.app.get('db'), userId)
       .then(foods =>
         res.json(foods.map(food => foodsServices.serializeFood(food)))
       )
