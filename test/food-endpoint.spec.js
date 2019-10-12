@@ -2,7 +2,7 @@ const knex = require('knex');
 const app = require('../src/app');
 const helpers = require('./test-helpers');
 
-describe.only('Foods Endpoints', () => {
+describe('Foods Endpoints', () => {
   let db;
 
   const { testUsers, testMeals, testFoods } = helpers.makeMacroFyFixtures();
@@ -53,7 +53,6 @@ describe.only('Foods Endpoints', () => {
           testFoods[foodId - 1].meal_id,
           testFoods[foodId - 1]
         );
-        console.log(foodId);
         return supertest(app)
           .get(`/api/foods/${foodId}`)
           .set('Authorization', helpers.makeAuthHeader(testUser))

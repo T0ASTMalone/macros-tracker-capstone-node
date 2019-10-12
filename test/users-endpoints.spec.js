@@ -3,7 +3,7 @@ const app = require('../src/app');
 const helpers = require('./test-helpers');
 const bcrypt = require('bcryptjs');
 
-describe('Users Endpoints', function() {
+describe.only('Users Endpoints', function() {
   let db;
 
   const { testUsers } = helpers.makeMacroFyFixtures();
@@ -21,6 +21,31 @@ describe('Users Endpoints', function() {
   before('cleanup', () => helpers.cleanTables(db));
 
   afterEach('cleanup', () => helpers.cleanTables(db));
+
+  describe(`GET /api/users/:id`, () => {
+    context(`Given there are users in the db`, () => {
+      beforeEach('seed users', () => helpers.seedUsers(db, testUsers));
+      const testUser = testUsers[0];
+      const expectedUser = Object.keys(testUser)
+        .filter(key => key !== 'password')
+        .reduce((res, key) => ((res[key] = testUser[key]), res), {});
+      it('responds with 200 and the users info', () => {
+        return supertest(app)
+          .get(`/api/users/${testUser.user_id}`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .expect(200, expectedUser);
+      });
+    });
+    context(`Given there are no users in the db`, () => {
+      const testUser = testUsers[0];
+      it('responds with 404 user not found', () => {
+        return supertest(app)
+          .get(`/api/users/1`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .expect(401, { error: 'Unauthorized request' });
+      });
+    });
+  });
 
   describe(`POST /api/users`, () => {
     context(`User Validation`, () => {
