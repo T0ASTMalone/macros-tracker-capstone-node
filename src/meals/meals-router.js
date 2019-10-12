@@ -124,7 +124,7 @@ mealsRouter
       .getMealById(knex, id)
       .then(meal => {
         if (!meal) {
-          return res.status(404).json({ error: { message: `Meal not found` } });
+          return res.status(404).json({ error: `Meal not found` });
         }
         res.meal = meal.meal_id;
         next();
@@ -133,8 +133,8 @@ mealsRouter
   })
   .get((req, res, next) => {
     const knex = req.app.get('db');
-    foodsService.getMealFoods(knex, res.meal).then(foods => {
-      res.json(foods.map(food => serializeFood(food)));
+    mealsServices.getMealFoods(knex, res.meal).then(foods => {
+      return res.status(200).json(foods);
     });
   });
 

@@ -32,6 +32,12 @@ const mealsServices = {
     return knex('meal_log')
       .where({ meal_id })
       .update(newMeal);
+  },
+
+  getMealFoods(knex, meal_id) {
+    return knex('food_log')
+      .select('*')
+      .where({ meal_id });
   }
 };
 

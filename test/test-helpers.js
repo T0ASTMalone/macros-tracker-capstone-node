@@ -198,7 +198,21 @@ function makeExpectedMeal(users, meal) {
   };
 }
 
-function makeExpectedMealFoods(users, mealId, foods) {
+function makeExpectedFood(users, mealId, food) {
+  return {
+    user_id: users.user_id,
+    meal_id: mealId,
+    id: food.id,
+    food_name: food.food_name,
+    date_added: food.date_added.toISOString().slice(0, -5) + 'Z',
+    protein: food.protein,
+    carbs: food.carbs,
+    fats: food.fats,
+    servings: food.servings
+  };
+}
+
+function makeExpectedMealFoods(mealId, foods) {
   const expectedFoods = foods.filter(food => food.meal_id === mealId);
 
   return expectedFoods.map(food => {
@@ -207,10 +221,10 @@ function makeExpectedMealFoods(users, mealId, foods) {
       date_added: food.date_added.toISOString(),
       food_name: food.food_name,
       meal_id: food.meal_id,
-      protein: food.protein.toString(),
-      carbs: food.carbs.toString(),
-      fats: food.fats.toString(),
-      servings: food.servings.toString()
+      protein: food.protein,
+      carbs: food.carbs,
+      fats: food.fats,
+      servings: food.servings
     };
   });
 }
@@ -236,6 +250,37 @@ function makeMaliciousMeal(user) {
   return {
     maliciousMeal,
     expectedMeal
+  };
+}
+
+function makeMaliciousFood(user, meal_id) {
+  const maliciousFood = [
+    {
+      meal_id: 911,
+      date_added: new Date(),
+      id: 911,
+      food_name: 'Naughty naughty very naughty <script>alert("xss");</script>',
+      user_id: user.user_id,
+      protein: '9',
+      carbs: '10',
+      fats: '2',
+      servings: '2'
+    }
+  ];
+
+  maliciousFood[0].date_added.toISOString().slice(0, -5) + 'Z';
+
+  const expectedFood = maliciousFood.map(food => {
+    return {
+      ...makeExpectedFood(user, meal_id, food),
+      meal_name:
+        'Naughty naughty very naughty &lt;script&gt;alert("xss");&lt;/script&gt;'
+    };
+  });
+
+  return {
+    maliciousFood,
+    expectedFood
   };
 }
 
@@ -321,8 +366,10 @@ module.exports = {
   makeUsersArray,
   makeMealsArray,
   makeExpectedMeal,
+  makeExpectedFood,
   makeExpectedMealFoods,
   makeMaliciousMeal,
+  makeMaliciousFood,
   makeFoodArray,
 
   makeMacroFyFixtures,
