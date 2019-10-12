@@ -23,7 +23,6 @@ describe('Users Endpoints', function() {
   afterEach('cleanup', () => helpers.cleanTables(db));
 
   describe(`POST /api/meals`, () => {
-    console.log(testFoods);
     context(`Meal validation`, () => {
       beforeEach('insert users', () => helpers.seedUsers(db, testUsers));
 
@@ -89,7 +88,7 @@ describe('Users Endpoints', function() {
               db
                 .from('meal_log')
                 .select('*')
-                .where('meal_id', res.body.user_id)
+                .where('meal_id', res.body.meal_id)
                 .first()
                 .then(row => {
                   expect(res.body).to.have.property('meal_id');
