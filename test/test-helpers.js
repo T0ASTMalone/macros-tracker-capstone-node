@@ -187,12 +187,11 @@ function makeFoodArray(users, meals) {
 }
 
 function makeExpectedMeal(users, meal) {
-  console.log(users);
   return {
     user_id: users.user_id,
     meal_id: meal.meal_id,
     meal_name: meal.meal_name,
-    date_added: meal.date_added.toISOString(),
+    date_added: meal.date_added.toISOString().slice(0, -5) + 'Z',
     protein: meal.protein.toString(),
     carbs: meal.carbs.toString(),
     fats: meal.fats.toString()
@@ -224,10 +223,13 @@ function makeMaliciousMeal(user) {
     user_id: user.user_id,
     protein: '9',
     carbs: '10',
-    fats: '0'
+    fats: '2'
   };
+
+  maliciousMeal.date_added.toISOString().slice(0, -5) + 'Z';
+
   const expectedMeal = {
-    ...makeExpectedMeal([user], maliciousMeal),
+    ...makeExpectedMeal(user, maliciousMeal),
     meal_name:
       'Naughty naughty very naughty &lt;script&gt;alert("xss");&lt;/script&gt;'
   };
@@ -285,6 +287,16 @@ function seedUsers(db, users) {
     );
 }
 
+function seedMeals(db, users, meals) {
+  return db.transaction(async trx => {
+    await seedUsers(trx, users);
+    await trx.into('meal_log').insert(meals);
+    await trx.raw(`SELECT setval('meal_log_meal_id_seq', ?)`, [
+      meals[meals.length - 1].meal_id
+    ]);
+  });
+}
+
 function seedMacroFyTables(db, users, meals, foods = []) {
   return db.transaction(async trx => {
     await seedUsers(trx, users);
@@ -318,5 +330,6 @@ module.exports = {
   seedMacroFyTables,
   seedMaliciousMeal,
   makeAuthHeader,
-  seedUsers
+  seedUsers,
+  seedMeals
 };

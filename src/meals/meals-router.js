@@ -12,7 +12,7 @@ const sanitizeMeal = meal => ({
   user_id: meal.user_id,
   meal_id: meal.meal_id,
   meal_name: xss(meal.meal_name),
-  date_added: meal.date_added,
+  date_added: meal.date_added.toISOString().slice(0, -5) + 'Z',
   protein: xss(meal.protein),
   carbs: xss(meal.carbs),
   fats: xss(meal.fats)
@@ -72,7 +72,6 @@ mealsRouter
   .all((req, res, next) => {
     const knex = req.app.get('db');
     const meal_id = req.params.id;
-    console.log(meal_id);
     mealsServices
       .getMealById(knex, meal_id)
       .then(meal => {
