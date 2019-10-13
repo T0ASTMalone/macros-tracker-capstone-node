@@ -1,6 +1,5 @@
 const path = require('path');
 const express = require('express');
-const xss = require('xss');
 const usersServices = require('./users-service');
 const macrosService = require('./macros-service');
 const { requireAuth } = require('../middleware/jwt-auth');

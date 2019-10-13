@@ -2,7 +2,6 @@ const path = require('path');
 const express = require('express');
 const xss = require('xss');
 const mealsServices = require('./meals-service');
-const foodsService = require('../foods/foods-service');
 const { requireAuth } = require('../middleware/jwt-auth');
 
 const mealsRouter = express.Router();

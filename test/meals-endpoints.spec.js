@@ -91,11 +91,11 @@ describe('Meals Endpoints', () => {
                   .where('meal_id', res.body.meal_id)
                   .first()
                   .then(row => {
-                    expect(res.body).to.have.property('meal_id');
-                    expect(res.body.meal_name).to.eql(newMeal.meal_name);
-                    expect(res.body.protein).to.eql(newMeal.protein);
-                    expect(res.body.carbs).to.eql(newMeal.carbs);
-                    expect(res.body.fats).to.eql(newMeal.fats);
+                    expect(row).to.have.property('meal_id');
+                    expect(row.meal_name).to.eql(newMeal.meal_name);
+                    expect(row.protein.toString(10)).to.eql(newMeal.protein);
+                    expect(row.carbs.toString(10)).to.eql(newMeal.carbs);
+                    expect(row.fats.toString(10)).to.eql(newMeal.fats);
                   })
               );
           });

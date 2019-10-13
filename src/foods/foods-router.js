@@ -1,6 +1,5 @@
 const path = require('path');
 const express = require('express');
-const knex = require('knex');
 const foodsServices = require('./foods-service');
 const jsonParser = express.json();
 const foodsRouter = express.Router();
