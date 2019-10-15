@@ -2,7 +2,6 @@ const path = require('path');
 const express = require('express');
 const xss = require('xss');
 const mealsServices = require('./meals-service');
-const foodsService = require('../foods/foods-service');
 const { requireAuth } = require('../middleware/jwt-auth');
 
 const mealsRouter = express.Router();
@@ -12,17 +11,18 @@ const sanitizeMeal = meal => ({
   user_id: meal.user_id,
   meal_id: meal.meal_id,
   meal_name: xss(meal.meal_name),
-  date_added: meal.date_added,
+  date_added: meal.date_added.toISOString().slice(0, -5) + 'Z',
   protein: xss(meal.protein),
   carbs: xss(meal.carbs),
   fats: xss(meal.fats)
 });
 
 const serializeFood = food => ({
-  food_id: food.id,
+  id: food.id,
   food_name: xss(food.food_name),
+  user_id: food.user_id,
   servings: xss(food.servings),
-  date_added: food.date_added,
+  date_added: food.date_added.toISOString().slice(0, -5) + 'Z',
   meal_id: food.meal_id,
   protein: xss(food.protein),
   carbs: xss(food.carbs),
@@ -34,7 +34,7 @@ mealsRouter
   .all(requireAuth)
   .get((req, res, next) => {
     const knex = req.app.get('db');
-    const user_id = req.body.user_id;
+    const user_id = req.user.user_id;
     mealsServices
       .getAllUsrMeals(knex, user_id)
       .then(meals => {
@@ -71,7 +71,7 @@ mealsRouter
   .all(requireAuth)
   .all((req, res, next) => {
     const knex = req.app.get('db');
-    const meal_id = req.params.meal_id;
+    const meal_id = req.params.id;
     mealsServices
       .getMealById(knex, meal_id)
       .then(meal => {
@@ -124,7 +124,7 @@ mealsRouter
       .getMealById(knex, id)
       .then(meal => {
         if (!meal) {
-          return res.status(404).json({ error: { message: `Meal not found` } });
+          return res.status(404).json({ error: `Meal not found` });
         }
         res.meal = meal.meal_id;
         next();
@@ -133,8 +133,8 @@ mealsRouter
   })
   .get((req, res, next) => {
     const knex = req.app.get('db');
-    foodsService.getMealFoods(knex, res.meal).then(foods => {
-      res.json(foods.map(food => serializeFood(food)));
+    mealsServices.getMealFoods(knex, res.meal).then(foods => {
+      return res.status(200).json(foods.map(food => serializeFood(food)));
     });
   });
 

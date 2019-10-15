@@ -71,7 +71,7 @@ const usersServices = {
       age: xss(user.age),
       goals: xss(user.goals),
       gender: xss(user.gender),
-      activity_lvl: user.activity_lvl,
+      activity_lvl: xss(user.activity_lvl),
       protein: xss(user.protein),
       carbs: xss(user.carbs),
       fats: xss(user.fats)

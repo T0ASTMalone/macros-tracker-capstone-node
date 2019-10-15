@@ -1,6 +1,5 @@
 const path = require('path');
 const express = require('express');
-const xss = require('xss');
 const usersServices = require('./users-service');
 const macrosService = require('./macros-service');
 const { requireAuth } = require('../middleware/jwt-auth');
@@ -106,7 +105,7 @@ usersRouter
       .catch(next);
   })
   .get((req, res, next) => {
-    res.json(sanitizeUser(res.user));
+    res.json(usersServices.serializeUser(res.user));
   })
   .delete((req, res, next) => {
     const knex = req.app.get('db');

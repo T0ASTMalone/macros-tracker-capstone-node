@@ -10,7 +10,6 @@ const mealsRouter = require('./meals/meals-router');
 const authRouter = require('./auth/auth-router');
 
 const app = express();
-const jsonParser = express.json();
 
 const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
 

@@ -82,7 +82,7 @@ function makeMealsArray() {
       fats: 15
     },
     {
-      user_id: 2,
+      user_id: 1,
       meal_id: 2,
       meal_name: 'Second test meal',
       date_added: new Date('2029-01-22T16:28:32.615Z'),
@@ -115,6 +115,7 @@ function makeFoodArray(users, meals) {
   return [
     {
       id: 1,
+      user_id: users[0].user_id,
       food_name: 'First test food!',
       meal_id: meals[0].meal_id,
       date_added: new Date('2029-01-22T16:28:32.615Z'),
@@ -125,6 +126,7 @@ function makeFoodArray(users, meals) {
     },
     {
       id: 2,
+      user_id: users[0].user_id,
       food_name: 'Second test food!',
       meal_id: meals[0].meal_id,
       date_added: new Date('2029-01-22T16:28:32.615Z'),
@@ -135,6 +137,7 @@ function makeFoodArray(users, meals) {
     },
     {
       id: 3,
+      user_id: users[0].user_id,
       food_name: 'Third test food!',
       meal_id: meals[0].meal_id,
       date_added: new Date('2029-01-22T16:28:32.615Z'),
@@ -145,6 +148,7 @@ function makeFoodArray(users, meals) {
     },
     {
       id: 4,
+      user_id: users[0].user_id,
       food_name: 'Fourth test food!',
       meal_id: meals[0].meal_id,
       date_added: new Date('2029-01-22T16:28:32.615Z'),
@@ -155,6 +159,7 @@ function makeFoodArray(users, meals) {
     },
     {
       id: 5,
+      user_id: users[3].user_id,
       food_name: 'Fifth test food!',
       meal_id: meals[meals.length - 1].meal_id,
       date_added: new Date('2029-01-22T16:28:32.615Z'),
@@ -165,6 +170,7 @@ function makeFoodArray(users, meals) {
     },
     {
       id: 6,
+      user_id: users[3].user_id,
       food_name: 'Sixth test food!',
       meal_id: meals[meals.length - 1].meal_id,
       date_added: new Date('2029-01-22T16:28:32.615Z'),
@@ -175,6 +181,7 @@ function makeFoodArray(users, meals) {
     },
     {
       id: 7,
+      user_id: users[3].user_id,
       food_name: 'Seventh test food!',
       meal_id: meals[3].meal_id,
       date_added: new Date('2029-01-22T16:28:32.615Z'),
@@ -191,19 +198,34 @@ function makeExpectedMeal(users, meal) {
     user_id: users.user_id,
     meal_id: meal.meal_id,
     meal_name: meal.meal_name,
-    date_added: meal.date_added.toISOString(),
-    protein: meal.protein,
-    carbs: meal.carbs,
-    fats: meal.fats
+    date_added: meal.date_added.toISOString().slice(0, -5) + 'Z',
+    protein: meal.protein.toString(),
+    carbs: meal.carbs.toString(),
+    fats: meal.fats.toString()
   };
 }
 
-function makeExpectedMealFoods(users, mealId, foods) {
+function makeExpectedFood(users, mealId, food) {
+  return {
+    user_id: users.user_id,
+    meal_id: mealId,
+    id: food.id,
+    food_name: food.food_name,
+    date_added: food.date_added.toISOString().slice(0, -5) + 'Z',
+    protein: food.protein,
+    carbs: food.carbs,
+    fats: food.fats,
+    servings: food.servings
+  };
+}
+
+function makeExpectedMealFoods(mealId, foods) {
   const expectedFoods = foods.filter(food => food.meal_id === mealId);
 
   return expectedFoods.map(food => {
     return {
       id: food.id,
+      user_id: food.user_id,
       date_added: food.date_added.toISOString(),
       food_name: food.food_name,
       meal_id: food.meal_id,
@@ -223,16 +245,50 @@ function makeMaliciousMeal(user) {
     user_id: user.user_id,
     protein: '9',
     carbs: '10',
-    fats: '0'
+    fats: '2'
   };
+
+  maliciousMeal.date_added.toISOString().slice(0, -5) + 'Z';
+
   const expectedMeal = {
-    ...makeExpectedMeal([user], maliciousMeal),
+    ...makeExpectedMeal(user, maliciousMeal),
     meal_name:
       'Naughty naughty very naughty &lt;script&gt;alert("xss");&lt;/script&gt;'
   };
   return {
     maliciousMeal,
     expectedMeal
+  };
+}
+
+function makeMaliciousFood(user, meal_id) {
+  const maliciousFood = [
+    {
+      meal_id: 911,
+      date_added: new Date(),
+      id: 911,
+      food_name: 'Naughty naughty very naughty <script>alert("xss");</script>',
+      user_id: user.user_id,
+      protein: '9',
+      carbs: '10',
+      fats: '2',
+      servings: '2'
+    }
+  ];
+
+  maliciousFood[0].date_added.toISOString().slice(0, -5) + 'Z';
+
+  const expectedFood = maliciousFood.map(food => {
+    return {
+      ...makeExpectedFood(user, meal_id, food),
+      food_name:
+        'Naughty naughty very naughty &lt;script&gt;alert("xss");&lt;/script&gt;'
+    };
+  });
+
+  return {
+    maliciousFood,
+    expectedFood
   };
 }
 
@@ -273,6 +329,7 @@ function seedUsers(db, users) {
     ...user,
     password: bcrypt.hashSync(user.password, 1)
   }));
+
   return db
     .into('users')
     .insert(preppedUsers)
@@ -281,6 +338,16 @@ function seedUsers(db, users) {
         users[users.length - 1].user_id
       ])
     );
+}
+
+function seedMeals(db, users, meals) {
+  return db.transaction(async trx => {
+    await seedUsers(trx, users);
+    await trx.into('meal_log').insert(meals);
+    await trx.raw(`SELECT setval('meal_log_meal_id_seq', ?)`, [
+      meals[meals.length - 1].meal_id
+    ]);
+  });
 }
 
 function seedMacroFyTables(db, users, meals, foods = []) {
@@ -307,8 +374,10 @@ module.exports = {
   makeUsersArray,
   makeMealsArray,
   makeExpectedMeal,
+  makeExpectedFood,
   makeExpectedMealFoods,
   makeMaliciousMeal,
+  makeMaliciousFood,
   makeFoodArray,
 
   makeMacroFyFixtures,
@@ -316,5 +385,6 @@ module.exports = {
   seedMacroFyTables,
   seedMaliciousMeal,
   makeAuthHeader,
-  seedUsers
+  seedUsers,
+  seedMeals
 };
