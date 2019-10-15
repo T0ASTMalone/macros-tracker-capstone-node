@@ -36,6 +36,18 @@ const foodsServices = {
       .update(newFood);
   },
 
+  formatFoods(foods) {
+    foods.map(food => {
+      const { protein, carbs, fats } = food;
+      const macros = { protein, fats, carbs };
+      return Object.keys(macros).map(macro => {
+        return macros[macro]
+          ? (food[macro] = parseInt(food[macro]) / parseInt(food.servings))
+          : (food[macro] = '0');
+      });
+    });
+  },
+
   serializeFood(food) {
     return {
       id: food.id,

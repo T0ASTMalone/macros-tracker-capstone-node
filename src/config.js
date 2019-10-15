@@ -6,5 +6,5 @@ module.exports = {
     'postgresql://dunder_mifflin:itstoasty@localhost/macros-tracker',
 
   JWT_SECRET: process.env.JWT_SECRET || 'mumbai-power',
-  JWT_EXPIRY: process.env.JWT_EXPIRY || '5m'
+  JWT_EXPIRY: process.env.JWT_EXPIRY || '20m'
 };

@@ -36,12 +36,21 @@ mealsRouter
   .get((req, res, next) => {
     const knex = req.app.get('db');
     const user_id = req.user.user_id;
-    mealsServices
-      .getAllUsrMeals(knex, user_id)
-      .then(meals => {
-        res.json(meals.map(meal => sanitizeMeal(meal)));
-      })
-      .catch(next);
+    req.query
+      ? mealsServices
+          .getTodaysMeals(knex, user_id)
+          .then(meals => {
+            mealsServices.formatMeals(meals);
+            return res.json(meals.map(meal => sanitizeMeal(meal)));
+          })
+          .catch(next)
+      : mealsServices
+          .getAllUsrMeals(knex, user_id)
+          .then(meals => {
+            mealsServices.formatMeals(meals);
+            return res.json(meals.map(meal => sanitizeMeal(meal)));
+          })
+          .catch(next);
   })
   .post(jsonParser, (req, res, next) => {
     const knex = req.app.get('db');
@@ -135,6 +144,7 @@ mealsRouter
   .get((req, res, next) => {
     const knex = req.app.get('db');
     mealsServices.getMealFoods(knex, res.meal).then(foods => {
+      mealsServices.formatMealFoods(foods);
       return res.status(200).json(foods.map(food => serializeFood(food)));
     });
   });
