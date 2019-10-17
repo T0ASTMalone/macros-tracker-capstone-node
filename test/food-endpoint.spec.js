@@ -53,7 +53,6 @@ describe.only('Foods Endpoints', () => {
           testFoods[foodId - 1].meal_id,
           testFoods[foodId - 1]
         );
-        console.log(foodId);
         return supertest(app)
           .get(`/api/foods/${foodId}`)
           .set('Authorization', helpers.makeAuthHeader(testUser))

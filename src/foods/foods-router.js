@@ -77,7 +77,6 @@ foodsRouter
   .all(requireAuth)
   .all((req, res, next) => {
     const id = req.params.id;
-    console.log(id);
     foodsServices
       .getById(req.app.get('db'), id)
       .then(food => {

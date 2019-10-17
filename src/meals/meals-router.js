@@ -36,21 +36,15 @@ mealsRouter
   .get((req, res, next) => {
     const knex = req.app.get('db');
     const user_id = req.user.user_id;
-    req.query
-      ? mealsServices
-          .getTodaysMeals(knex, user_id)
-          .then(meals => {
-            mealsServices.formatMeals(meals);
-            return res.json(meals.map(meal => sanitizeMeal(meal)));
-          })
-          .catch(next)
-      : mealsServices
-          .getAllUsrMeals(knex, user_id)
-          .then(meals => {
-            mealsServices.formatMeals(meals);
-            return res.json(meals.map(meal => sanitizeMeal(meal)));
-          })
-          .catch(next);
+    mealsServices
+      .getAllUsrMeals(knex, user_id)
+      .then(meals => {
+        console.log(meals);
+
+        mealsServices.formatMeals(meals);
+        return res.json(meals.map(meal => sanitizeMeal(meal)));
+      })
+      .catch(next);
   })
   .post(jsonParser, (req, res, next) => {
     const knex = req.app.get('db');
@@ -147,6 +141,35 @@ mealsRouter
       mealsServices.formatMealFoods(foods);
       return res.status(200).json(foods.map(food => serializeFood(food)));
     });
+  });
+
+mealsRouter
+  .route('/today')
+  .all((req, res, next) => {
+    const knex = req.app.get('db');
+    const id = req.params.id;
+    mealsServices
+      .getMealById(knex, id)
+      .then(meal => {
+        if (!meal) {
+          return res.status(404).json({ error: `Meal not found` });
+        }
+        res.meal = meal.meal_id;
+        next();
+      })
+      .catch(next);
+  })
+  .get((req, res, next) => {
+    const user_id = req.user.user_id;
+    const knex = req.app.get('db');
+    mealsServices
+      .getTodaysMeals(knex, user_id)
+      .then(meals => {
+        console.log(meals);
+        mealsServices.formatMeals(meals);
+        return res.json(meals.map(meal => sanitizeMeal(meal)));
+      })
+      .catch(next);
   });
 
 module.exports = mealsRouter;

@@ -7,7 +7,7 @@ const mealsServices = {
   },
 
   getTodaysMeals(knex, user_id) {
-    const where = `date_added > now()::date-365`;
+    const where = `DATE_TRUNC('day',date_added) = CURRENT_DATE`;
     return knex
       .from('meal_log')
       .select('*')
@@ -63,7 +63,6 @@ const mealsServices = {
       const { protein, carbs, fats } = meal;
       const macros = { protein, fats, carbs };
       return Object.keys(macros).map(macro => {
-        console.log(meal[macro]);
         return macros[macro] ? macros[macro] : (meal[macro] = '0');
       });
     });
