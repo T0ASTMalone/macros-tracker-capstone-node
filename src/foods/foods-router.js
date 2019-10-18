@@ -9,12 +9,13 @@ foodsRouter
   .route('/')
   .all(requireAuth)
   .get(jsonParser, (req, res, next) => {
-    const userId = req.body.user_id;
+    const userId = req.user.user_id;
     foodsServices
       .getUserFoods(req.app.get('db'), userId)
-      .then(foods =>
-        res.json(foods.map(food => foodsServices.serializeFood(food)))
-      )
+      .then(foods => {
+        foodsServices.formatFoods(foods);
+        return res.json(foods.map(food => foodsServices.serializeFood(food)));
+      })
       .catch(next);
   })
   .post(jsonParser, (req, res, next) => {
