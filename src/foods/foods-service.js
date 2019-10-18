@@ -13,7 +13,7 @@ const foodsServices = {
       .from('food_log')
       .insert(newFood)
       .returning('*')
-      .then(rows => rows[0]);
+      .then(rows => rows);
   },
 
   getById(knex, id) {
@@ -55,10 +55,10 @@ const foodsServices = {
       meal_id: food.meal_id,
       food_name: xss(food.food_name),
       date_added: food.date_added.toISOString().slice(0, -5) + 'Z',
-      protein: xss(food.protein),
-      carbs: xss(food.carbs),
-      fats: xss(food.fats),
-      servings: xss(food.servings)
+      protein: food.protein,
+      carbs: food.carbs,
+      fats: food.fats,
+      servings: food.servings
     };
   }
 };

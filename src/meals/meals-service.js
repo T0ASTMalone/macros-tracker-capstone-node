@@ -1,3 +1,5 @@
+const xss = require('xss');
+
 const mealsServices = {
   getAllUsrMeals(knex, user_id) {
     return knex

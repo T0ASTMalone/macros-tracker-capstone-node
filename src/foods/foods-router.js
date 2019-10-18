@@ -58,17 +58,15 @@ foodsRouter
       return res.status(400).json({ error: missingKeyError });
     }
 
-    foods.map(verifiedFood => {
-      foodsServices
-        .createFood(req.app.get('db'), verifiedFood)
-        .then(food =>
-          res
-            .status(201)
-            .location(path.posix.join(req.originalUrl + `/${food.id}`))
-            .json(foodsServices.serializeFood(food))
-        )
-        .catch(next);
-    });
+    foodsServices
+      .createFood(req.app.get('db'), foods)
+      .then(createdFoods =>
+        res
+          .status(201)
+          .location(path.posix.join(`api/meals` + `/${foods[0].meal_id}/foods`))
+          .json(createdFoods.map(food => foodsServices.serializeFood(food)))
+      )
+      .catch(next);
   });
 
 foodsRouter

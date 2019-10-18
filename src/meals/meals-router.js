@@ -1,6 +1,5 @@
 const path = require('path');
 const express = require('express');
-const xss = require('xss');
 const mealsServices = require('./meals-service');
 const { requireAuth } = require('../middleware/jwt-auth');
 
@@ -17,7 +16,7 @@ mealsRouter
       .getAllUsrMeals(knex, user_id)
       .then(meals => {
         mealsServices.formatMeals(meals);
-        return res.json(meals.map(meal => mealsService.serializeMeal(meal)));
+        return res.json(meals.map(meal => mealsServices.serializeMeal(meal)));
       })
       .catch(next);
   })
@@ -40,7 +39,7 @@ mealsRouter
         res
           .status(201)
           .location(path.posix.join(req.originalUrl + `/${meal.meal_id}`))
-          .json(mealsService.serializeMeal(meal));
+          .json(mealsServices.serializeMeal(meal));
       })
       .catch(next);
   });
@@ -63,7 +62,7 @@ mealsRouter
       .catch(next);
   })
   .get((req, res, next) => {
-    res.json(mealsService.serializeMeal(res.meal));
+    res.json(mealsServices.serializeMeal(res.meal));
   })
   .delete((req, res, next) => {
     const knex = req.app.get('db');
@@ -116,7 +115,7 @@ mealsRouter
       mealsServices.formatMealFoods(foods);
       return res
         .status(200)
-        .json(foods.map(food => mealsService.serializeFood(food)));
+        .json(foods.map(food => mealsServices.serializeFood(food)));
     });
   });
 
@@ -127,7 +126,7 @@ mealsRouter.route('/:id/today').get((req, res, next) => {
     .getTodaysMeals(knex, user_id)
     .then(meals => {
       mealsServices.formatMeals(meals);
-      return res.json(meals.map(meal => mealsService.serializeMeal(meal)));
+      return res.json(meals.map(meal => mealsServices.serializeMeal(meal)));
     })
     .catch(next);
 });
