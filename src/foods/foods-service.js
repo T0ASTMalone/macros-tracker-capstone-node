@@ -13,7 +13,7 @@ const foodsServices = {
       .from('food_log')
       .insert(newFood)
       .returning('*')
-      .then(rows => rows[0]);
+      .then(rows => rows);
   },
 
   getById(knex, id) {
