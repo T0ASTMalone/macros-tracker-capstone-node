@@ -138,20 +138,24 @@ describe('Foods Endpoints', () => {
             .set('Authorization', helpers.makeAuthHeader(testUser))
             .send(testFood)
             .expect(res => {
-              expect(res.body).to.have.property('id');
-              expect(res.body.meal_id).to.eql(testFood[0].meal_id);
-              expect(res.body.user_id).to.eql(testFood[0].user_id);
-              expect(res.body.food_name).to.eql(testFood[0].food_name);
-              expect(res.body.protein).to.eql(testFood[0].protein);
-              expect(res.body.carbs).to.eql(testFood[0].carbs);
-              expect(res.body.fats).to.eql(testFood[0].fats);
-              expect(res.headers.location).to.eql(`/api/foods/${res.body.id}`);
+              expect(res.body[0]).to.have.property('id');
+              expect(res.body[0].meal_id).to.eql(testFood[0].meal_id);
+              expect(res.body[0].user_id).to.eql(testFood[0].user_id);
+              expect(res.body[0].food_name).to.eql(testFood[0].food_name);
+              expect(res.body[0].protein.toString(10)).to.eql(
+                testFood[0].protein
+              );
+              expect(res.body[0].carbs.toString(10)).to.eql(testFood[0].carbs);
+              expect(res.body[0].fats.toString(10)).to.eql(testFood[0].fats);
+              expect(res.headers.location).to.eql(
+                `/api/meals/${res.body[0].meal_id}/foods`
+              );
             })
             .expect(res =>
               db
                 .from('food_log')
                 .select('*')
-                .where('id', res.body.id)
+                .where('id', res.body[0].id)
                 .first()
                 .then(row => {
                   expect(row).to.have.property('id');

@@ -63,7 +63,9 @@ foodsRouter
       .then(createdFoods =>
         res
           .status(201)
-          .location(path.posix.join(`api/meals` + `/${foods[0].meal_id}/foods`))
+          .location(
+            path.posix.join(`/api/meals` + `/${foods[0].meal_id}/foods`)
+          )
           .json(createdFoods.map(food => foodsServices.serializeFood(food)))
       )
       .catch(next);
