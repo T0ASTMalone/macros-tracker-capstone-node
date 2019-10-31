@@ -1,8 +1,8 @@
-const path = require('path');
-const express = require('express');
-const xss = require('xss');
-const mealsServices = require('./meals-service');
-const { requireAuth } = require('../middleware/jwt-auth');
+const path = require("path");
+const express = require("express");
+const xss = require("xss");
+const mealsServices = require("./meals-service");
+const { requireAuth } = require("../middleware/jwt-auth");
 
 const mealsRouter = express.Router();
 const jsonParser = express.json();
@@ -11,7 +11,7 @@ const sanitizeMeal = meal => ({
   user_id: meal.user_id,
   meal_id: meal.meal_id,
   meal_name: xss(meal.meal_name),
-  date_added: meal.date_added.toISOString().slice(0, -5) + 'Z',
+  date_added: meal.date_added.toISOString().slice(0, -5) + "Z",
   protein: xss(meal.protein),
   carbs: xss(meal.carbs),
   fats: xss(meal.fats)
@@ -22,7 +22,7 @@ const serializeFood = food => ({
   food_name: xss(food.food_name),
   user_id: food.user_id,
   servings: xss(food.servings),
-  date_added: food.date_added.toISOString().slice(0, -5) + 'Z',
+  date_added: food.date_added.toISOString().slice(0, -5) + "Z",
   meal_id: food.meal_id,
   protein: xss(food.protein),
   carbs: xss(food.carbs),
@@ -30,20 +30,29 @@ const serializeFood = food => ({
 });
 
 mealsRouter
-  .route('/')
+  .route("/")
   .all(requireAuth)
   .get((req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     const user_id = req.user.user_id;
-    mealsServices
-      .getAllUsrMeals(knex, user_id)
-      .then(meals => {
-        res.json(meals.map(meal => sanitizeMeal(meal)));
-      })
-      .catch(next);
+    req.query
+      ? mealsServices
+          .getTodaysMeals(knex, user_id)
+          .then(meals => {
+            mealsServices.formatMeals(meals);
+            return res.json(meals.map(meal => sanitizeMeal(meal)));
+          })
+          .catch(next)
+      : mealsServices
+          .getAllUsrMeals(knex, user_id)
+          .then(meals => {
+            mealsServices.formatMeals(meals);
+            return res.json(meals.map(meal => sanitizeMeal(meal)));
+          })
+          .catch(next);
   })
   .post(jsonParser, (req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     const { user_id, meal_name, protein, carbs, fats } = req.body;
     const newMeal = { user_id, meal_name, protein, carbs, fats };
 
@@ -67,10 +76,10 @@ mealsRouter
   });
 
 mealsRouter
-  .route('/:id')
+  .route("/:id")
   .all(requireAuth)
   .all((req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     const meal_id = req.params.id;
     mealsServices
       .getMealById(knex, meal_id)
@@ -87,7 +96,7 @@ mealsRouter
     res.json(sanitizeMeal(res.meal));
   })
   .delete((req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     const id = req.params.id;
     mealsServices
       .deleteMeal(knex, id)
@@ -97,7 +106,7 @@ mealsRouter
       .catch(next);
   })
   .patch(jsonParser, (req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     const id = req.params.id;
     const newMealInfo = req.body;
     if (!newMealInfo) {
@@ -116,9 +125,9 @@ mealsRouter
   });
 
 mealsRouter
-  .route('/:id/foods')
+  .route("/:id/foods")
   .all((req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     const id = req.params.id;
     mealsServices
       .getMealById(knex, id)
@@ -132,7 +141,7 @@ mealsRouter
       .catch(next);
   })
   .get((req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     mealsServices.getMealFoods(knex, res.meal).then(foods => {
       return res.status(200).json(foods.map(food => serializeFood(food)));
     });
