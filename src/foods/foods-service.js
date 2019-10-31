@@ -13,7 +13,7 @@ const foodsServices = {
       .from("food_log")
       .insert(newFood)
       .returning("*")
-      .then(rows => rows[0]);
+      .then(rows => rows);
   },
 
   getById(knex, id) {
@@ -36,6 +36,18 @@ const foodsServices = {
       .update(newFood);
   },
 
+  formatFoods(foods) {
+    foods.map(food => {
+      const { protein, carbs, fats } = food;
+      const macros = { protein, fats, carbs };
+      return Object.keys(macros).map(macro => {
+        return macros[macro]
+          ? (food[macro] = parseInt(food[macro]) / parseInt(food.servings))
+          : (food[macro] = "0");
+      });
+    });
+  },
+
   serializeFood(food) {
     return {
       id: food.id,
@@ -43,10 +55,10 @@ const foodsServices = {
       meal_id: food.meal_id,
       food_name: xss(food.food_name),
       date_added: food.date_added.toISOString().slice(0, -5) + "Z",
-      protein: xss(food.protein),
-      carbs: xss(food.carbs),
-      fats: xss(food.fats),
-      servings: xss(food.servings)
+      protein: food.protein,
+      carbs: food.carbs,
+      fats: food.fats,
+      servings: food.servings
     };
   }
 };

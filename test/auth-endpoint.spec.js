@@ -80,8 +80,10 @@ describe('Auth Endpoints', function() {
       return supertest(app)
         .post('/api/auth/login')
         .send(userValidCreds)
-        .expect(200, {
-          authToken: expectedToken
+        .expect(200)
+        .expect(res => {
+          expect(res.body.authToken).to.eql(expectedToken);
+          expect(res.body.payload.user_id).to.eql(testUser.user_id);
         });
     });
   });
@@ -102,8 +104,10 @@ describe('Auth Endpoints', function() {
       return supertest(app)
         .post('/api/auth/refresh')
         .set('Authorization', helpers.makeAuthHeader(testUser))
-        .expect(200, {
-          authToken: expectedToken
+        .expect(200)
+        .expect(res => {
+          expect(res.body.authToken).to.eql(expectedToken);
+          expect(res.body.payload.user_id).to.eql(testUser.user_id);
         });
     });
   });
