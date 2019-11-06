@@ -5,7 +5,8 @@ const foodsServices = {
     return knex
       .from('food_log')
       .select('*')
-      .where({ user_id });
+      .where({ user_id })
+      .orderBy('date_added', 'desc');
   },
 
   createFood(knex, newFood) {

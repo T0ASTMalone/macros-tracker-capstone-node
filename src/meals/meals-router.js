@@ -78,6 +78,7 @@ mealsRouter
     const knex = req.app.get('db');
     const id = req.params.id;
     const newMealInfo = req.body;
+    console.log('new meal info: ', newMealInfo);
     if (!newMealInfo) {
       return res.status(400).json({
         error: {

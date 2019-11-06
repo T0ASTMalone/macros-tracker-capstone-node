@@ -5,7 +5,8 @@ const mealsServices = {
     return knex
       .from('meal_log')
       .select('*')
-      .where({ user_id });
+      .where({ user_id })
+      .orderBy('date_added', 'desc');
   },
 
   getTodaysMeals(knex, user_id) {
@@ -82,7 +83,9 @@ const mealsServices = {
       const { protein, carbs, fats } = food;
       const macros = { protein, fats, carbs };
       return Object.keys(macros).map(macro => {
-        return macros[macro] ? macros[macro] : (food[macro] = '0');
+        return macros[macro]
+          ? (food[macro] = parseInt(food[macro]) / parseInt(food.servings))
+          : (food[macro] = '0');
       });
     });
   },
