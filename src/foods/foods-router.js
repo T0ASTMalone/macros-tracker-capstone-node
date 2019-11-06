@@ -20,7 +20,6 @@ foodsRouter
   })
   .post(jsonParser, (req, res, next) => {
     const foods = req.body;
-
     if (req.body.length < 1) {
       return res
         .status(400)

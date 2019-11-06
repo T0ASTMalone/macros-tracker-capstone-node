@@ -1,26 +1,102 @@
-# Express Boilerplate!
+# macros-tracker-capstone-client
 
-This is a boilerplate project used for starting new projects!
+The macros tracker allows you to track your macro nutrients (Proteins, Carbs, and Fats) throughout your day in order to meet your daily goals. By creating meals and adding them to your day you can see the total macros you have eaten and how many you have left.
 
-## Set up
+## Website
 
-Complete the following steps to start a new project (NEW-PROJECT-NAME):
+The website is a Heroku/Zeit application and may take a minute to start up when logging in.
 
-1. Clone this repository to your local machine `git clone BOILERPLATE-URL NEW-PROJECTS-NAME`
-2. `cd` into the cloned repository
-3. Make a fresh start of the git history for this project with `rm -rf .git && git init`
-4. Install the node dependencies `npm install`
-5. Move the example Environment file to `.env` that will be ignored by git and read by the express server `mv example.env .env`
-6. Edit the contents of the `package.json` to use NEW-PROJECT-NAME instead of `"name": "express-boilerplate",`
+url: https://miguels-macro-tracker.now.sh/
 
-## Scripts
+Demo User:
 
-Start the application `npm start`
+email:
+notanemail@gmail.com
 
-Start nodemon for the application `npm run dev`
+password:
+ThisIsJust@TestPassword1
 
-Run the tests `npm test`
+## Site map
 
-## Deploying
+---
 
-When your new project is ready for deployment, add a new Heroku application with `heroku create`. This will make a new git remote called "heroku" and you can then `npm run deploy` which will push to this remote's master branch.
+url: https://www.gloomaps.com/JKGJNe7Aqb
+
+![Site Map](/src/screenshots/macros-tracker-sitemap.png)
+
+## User Stories
+
+---
+
+**Home**
+
+As a user, I want to find out what the site is about.
+
+![Landing Page](/src/screenshots/styled-screenshots/landing.PNG)
+
+**Register**
+
+As a user, I want to register and create my goals so I can start tracking my macros.
+
+![User Info Page](/src/screenshots/styled-screenshots/register.PNG)
+
+**Log in**
+
+As a user, I want to sign in so I can access my profile.
+
+![Login Page](/src/screenshots/styled-screenshots/sign-in.PNG)
+
+**Dashboard**
+
+As a user, I want to see my current goals and my progress so far.
+
+![Dashboard Page](/src/screenshots/styled-screenshots/progress.PNG)
+
+**Add Meal**
+
+As a user, I want to add a meal to my day so that I can track my macros.
+
+![Create Meal Page](/src/screenshots/styled-screenshots/creating-meal.PNG)
+
+**Add Food**
+
+As a user, I want to add a food to my meal.
+
+![Add Food Page](/src/screenshots/styled-screenshots/create-food.PNG)
+
+**Food log**
+
+As a user, I want to see the foods that I have logged.
+
+![Food Log Page](/src/screenshots/styled-screenshots/food-log.PNG)
+
+**Meal log**
+
+As a user, I want to see the meals that I have logged.
+
+![Food Log Page](/src/screenshots/styled-screenshots/meal-log.PNG)
+
+## Technical
+
+---
+
+MacroFy was built with:
+
+#### Front End
+
+- HTML5
+- CSS3
+- JavaScript
+- ReactJS
+
+#### Back End
+
+- Node.js
+- Express.js
+- PostgreSQL
+- Mocha and Chai for testing
+
+## Development Road Map
+
+- Add workout tracker
+- Add search and filter options to food/meal log

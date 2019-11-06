@@ -1,16 +1,16 @@
-const path = require('path');
-const express = require('express');
-const mealsServices = require('./meals-service');
-const { requireAuth } = require('../middleware/jwt-auth');
+const path = require("path");
+const express = require("express");
+const mealsServices = require("./meals-service");
+const { requireAuth } = require("../middleware/jwt-auth");
 
 const mealsRouter = express.Router();
 const jsonParser = express.json();
 
 mealsRouter
-  .route('/')
+  .route("/")
   .all(requireAuth)
   .get((req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     const user_id = req.user.user_id;
     mealsServices
       .getAllUsrMeals(knex, user_id)
@@ -21,7 +21,7 @@ mealsRouter
       .catch(next);
   })
   .post(jsonParser, (req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     const { user_id, meal_name, protein, carbs, fats } = req.body;
     const newMeal = { user_id, meal_name, protein, carbs, fats };
 
@@ -45,10 +45,10 @@ mealsRouter
   });
 
 mealsRouter
-  .route('/:id')
+  .route("/:id")
   .all(requireAuth)
   .all((req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     const meal_id = req.params.id;
     mealsServices
       .getMealById(knex, meal_id)
@@ -65,7 +65,7 @@ mealsRouter
     res.json(mealsServices.serializeMeal(res.meal));
   })
   .delete((req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     const id = req.params.id;
     mealsServices
       .deleteMeal(knex, id)
@@ -75,7 +75,7 @@ mealsRouter
       .catch(next);
   })
   .patch(jsonParser, (req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     const id = req.params.id;
     const newMealInfo = req.body;
     console.log('new meal info: ', newMealInfo);
@@ -95,9 +95,9 @@ mealsRouter
   });
 
 mealsRouter
-  .route('/:id/foods')
+  .route("/:id/foods")
   .all((req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     const id = req.params.id;
     mealsServices
       .getMealById(knex, id)
@@ -111,7 +111,7 @@ mealsRouter
       .catch(next);
   })
   .get((req, res, next) => {
-    const knex = req.app.get('db');
+    const knex = req.app.get("db");
     mealsServices.getMealFoods(knex, res.meal).then(foods => {
       mealsServices.formatMealFoods(foods);
       return res
@@ -120,9 +120,9 @@ mealsRouter
     });
   });
 
-mealsRouter.route('/:id/today').get((req, res, next) => {
+mealsRouter.route("/:id/today").get((req, res, next) => {
   const user_id = req.params.id;
-  const knex = req.app.get('db');
+  const knex = req.app.get("db");
   mealsServices
     .getTodaysMeals(knex, user_id)
     .then(meals => {
