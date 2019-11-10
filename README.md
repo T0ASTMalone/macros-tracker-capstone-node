@@ -44,37 +44,37 @@ As a user, I want to register and create my goals so I can start tracking my mac
 
 As a user, I want to sign in so I can access my profile.
 
-![Login Page](/src/screenshots/styled-screenshots/sign-in.PNG)
+![Sign in Page](src\screenshots\styled-screenshots\sign-in.PNG)
 
 **Dashboard**
 
 As a user, I want to see my current goals and my progress so far.
 
-![Dashboard Page](/src/screenshots/styled-screenshots/progress.PNG)
+![Dashboard Page](src\screenshots\styled-screenshots\dashboard.PNG)
 
 **Add Meal**
 
 As a user, I want to add a meal to my day so that I can track my macros.
 
-![Create Meal Page](/src/screenshots/styled-screenshots/creating-meal.PNG)
+![Create Meal Page](src\screenshots\styled-screenshots\create-food.PNG)
 
 **Add Food**
 
 As a user, I want to add a food to my meal.
 
-![Add Food Page](/src/screenshots/styled-screenshots/create-food.PNG)
+![Add Food Page](src\screenshots\styled-screenshots\create-food.PNG)
 
 **Food log**
 
 As a user, I want to see the foods that I have logged.
 
-![Food Log Page](/src/screenshots/styled-screenshots/food-log.PNG)
+![Food Log Page](src\screenshots\styled-screenshots\food-log.PNG)
 
 **Meal log**
 
 As a user, I want to see the meals that I have logged.
 
-![Food Log Page](/src/screenshots/styled-screenshots/meal-log.PNG)
+![Food Log Page](src\screenshots\styled-screenshots\meal-log.PNG)
 
 ## Technical
 
