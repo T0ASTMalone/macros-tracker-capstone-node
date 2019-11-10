@@ -2,11 +2,11 @@
 
 An api for calculating a users daily macro nutrients and logging user foods and meals and keep track of their food intake from day to day.
 
+Responds with JSON
+
 **Authentication**
 
 - json web tokens
-
-Responds with JSON
 
 **POST /users**
 
@@ -18,7 +18,6 @@ A users macors are calculated using the following information using the Mifflin-
 Register a new user by providing a valid user with the following information
 
     const newUser = {
-
         email: "example@email.com" ,
         password: "examplePassword1!,
         age: 24,
@@ -27,7 +26,7 @@ Register a new user by providing a valid user with the following information
         weight: 77.11, *
         goals: "gain",
         activity_lvl: "1.2" *
-    }
+    };
 
 \*Height should be converted to cm and weight to kg
 
@@ -56,12 +55,12 @@ Register a new user by providing a valid user with the following information
 **Example request**
 
     fetch(“https://miguels-macro-tracker.now.sh/api/users”, {
+        method: ‘POST’,
         headers: {
-            method: ‘POST’,
-            body: JSON.stringify(newUser),
-            authorization: ‘bearer [authorization token]’
+            "content-type": "application/json",
         }
-    })
+        body: JSON.stringify(newUser),
+    });
 
 **Example response**
 
@@ -70,8 +69,8 @@ Register a new user by providing a valid user with the following information
         email: "example@email.com" ,
         age: 24,
         gender: "male",
-        height: 172, *
-        weight: 77.11, *
+        height: 172,
+        weight: 77.11,
         goals: "gain",
         activity_lvl: "1.2"
         macros:
@@ -96,28 +95,28 @@ Log in with valid credentials
             "content-type": "application/json"
         },
         body: JSON.stringify(credentials)
-    })
+    });
 
 Credentials should contain the following:
 
     const credentials = {
         email: "valid@email.com",
         password: "validPassword1!"
-    }
+    };
 
 **GET /meals**
 
-Get all the users meals by sending the users id in the body
+Get all the users meals by providing the user id
 
 **Example request:**
 
     fetch(“https://miguels-macro-tracker.now.sh/api/meals”, {
+        method: ‘GET’,
         headers: {
-            method: ‘GET’,
-            user: [user id],
             authorization: ‘bearer [authorization token]’
-        }
-    })
+        },
+        user: [user id],
+    });
 
 **Example response:**
 
@@ -144,7 +143,7 @@ Get all the users meals by sending the users id in the body
 
 **POST /meals**
 
-post new meal to users log
+Post new meal to users log
 
 New meals should include the following:
 
@@ -154,17 +153,18 @@ New meals should include the following:
         protein,
         carbs,
         fats
-    }
+    };
 
 **Example request**
 
     fetch(“https://miguels-macro-tracker.now.sh/api/meals”, {
+        method: ‘POST’,
         headers: {
-            method: ‘POST’,
-            body: JSON.stringify([meal])
+            "content-type": "application/json",
             authorization: ‘bearer [authorization token]’
-        }
-    })
+        },
+        body: JSON.stringify([meal])
+    });
 
 **GET /meals/:meal-id**
 
@@ -173,11 +173,11 @@ Get users meal by meal id
 **Example request**
 
     fetch(“https://miguels-macro-tracker.now.sh/api/meals/[meal-id]”, {
+        method: ‘GET’,
         headers: {
-            method: ‘GET’,
             authorization: ‘bearer [authorization token]’
         }
-    })
+    });
 
 **Example response:**
 
@@ -193,43 +193,44 @@ Get users meal by meal id
 
 **DELETE /meals/:meal-id**
 
-Delete meal by providing the meal id in the url
+Delete meal by providing the meal id
 
 **Example request**
 
     fetch(“https://miguels-macro-tracker.now.sh/api/meals/[meal-id]”, {
+        method: ‘DELETE’,
         headers: {
-            method: ‘DELETE’,
             authorization: ‘bearer [authorization token]’
         }
-    })
+    });
 
 **PATCH /meals/meal-id**
 
-Update meal by providing the meal id in the url and the new meal information in the body
+Update meal by providing the meal id and the new meal information in the body of the request
 
 \*_Example request_
 
     fetch(“https://miguels-macro-tracker.now.sh/api/meals/[meal-id]”, {
+        method: ‘PATCH’,
         headers: {
-            method: ‘PATCH’,
-            body: JSON.stringify([updated-meal]),
+            "content-type": "application/json",
             authorization: ‘bearer [authorization token]’
-        }
-    })
+        },
+        body: JSON.stringify([updated-meal]),
+    });
 
 **GET /user-id/today**
 
-Get meals for the current day by providing the users id in the url
+Get meals for the current day by providing the users id
 
 **Example request**
 
     fetch(“https://miguels-macro-tracker.now.sh/api/meals/[user-id]/today”, {
+        method: ‘GET’,
         headers: {
-            method: ‘GET’,
             authorization: ‘bearer [authorization token]’
         }
-    })
+    });
 
 **Example response:**
 
@@ -256,16 +257,16 @@ Get meals for the current day by providing the users id in the url
 
 **GET /meals/:meal-id/foods**
 
-Get foods in meal by providing the meal id in the url
+Get foods in meal by providing the meal id
 
 **Example request**
 
     fetch(“https://miguels-macro-tracker.now.sh/api/meals/[meal-id]/foods”, {
+        method: ‘GET’,
         headers: {
-            method: ‘GET’,
             authorization: ‘bearer [authorization token]’
         }
-    })
+    });
 
 **Example response:**
 
@@ -312,12 +313,12 @@ Get all of the users logged foods
 **Example request**
 
     fetch(“https://miguels-macro-tracker.now.sh/api/foods”, {
+        method: ‘GET’,
         headers: {
-            method: ‘GET’,
-            user: [user id],
             authorization: ‘bearer [authorization token]’
-        }
-    })
+        },
+        user: [user id],
+    });
 
 **Example response:**
 
@@ -371,31 +372,31 @@ New meals should include the following:
         carbs: 2,
         fats: 3,
         servings: 1
-
-}
+    };
 
 **Example Request**
 
     fetch(“https://miguels-macro-tracker.now.sh/api/foods”, {
+        method: ‘POST’,
         headers: {
-            method: ‘POST’,
-            body: JSON.stringify([new-food])
+            "content-type": "application/json",
             authorization: ‘bearer [authorization token]’
-        }
-    })
+        },
+        body: JSON.stringify([new-food])
+    });
 
 **GET /foods/food-id**
 
-Get food by providing the food id in the url
+Get food by providing the food id
 
 **Example Request**
 
     fetch(“https://miguels-macro-tracker.now.sh/api/foods/[food-id]”, {
+        method: ‘GET’,
         headers: {
-            method: ‘GET’,
             authorization: ‘bearer [authorization token]’
         }
-    })
+    });
 
 **Example response**
 
@@ -413,30 +414,31 @@ Get food by providing the food id in the url
 
 **DELETE /foods/food-id**
 
-Delete foods by providing the id in the url
+Delete foods by providing the id
 
 **Example Request**
 
     fetch(“https://miguels-macro-tracker.now.sh/api/foods/[food-id]”, {
+        method: ‘DELETE’,
         headers: {
-            method: ‘DELETE’,
             authorization: ‘bearer [authorization token]’
         }
-    })
+    });
 
 **PATCH /foods/food-id**
 
-Update foods by providing the food id in the url and the updated information in the body of the request
+Update foods by providing the food id and the updated information in the body of the request
 
 **Example request**
 
     fetch(“https://miguels-macro-tracker.now.sh/api/foods/[food-id]”, {
+        method: ‘PATCH’,
         headers: {
-            method: ‘PATCH’,
-            body: JSON.stringify([updated-food]),
+            "content-type": "application/json",
             authorization: ‘bearer [authorization token]’
         }
-    })
+        body: JSON.stringify([updated-food]),
+    });
 
 **Response codes**
 
