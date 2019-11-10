@@ -2,6 +2,10 @@
 
 The macros tracker allows you to track your macro nutrients (Proteins, Carbs, and Fats) throughout your day in order to meet your daily goals. By creating meals and adding them to your day you can see the total macros you have eaten and how many you have left.
 
+## API Documents
+
+To view API Documentation head to [apidocs.md](apidocs.md) file
+
 ## Website
 
 The website is a Heroku/Zeit application and may take a minute to start up when logging in.
@@ -22,7 +26,7 @@ ThisIsJust@TestPassword1
 
 url: https://www.gloomaps.com/JKGJNe7Aqb
 
-![Site Map](/src/screenshots/macros-tracker-sitemap.png)
+![Site Map](src\screenshots\macros-tracker-sitemap.png)
 
 ## User Stories
 
@@ -32,15 +36,15 @@ url: https://www.gloomaps.com/JKGJNe7Aqb
 
 As a user, I want to find out what the site is about.
 
-![Landing Page](/src/screenshots/styled-screenshots/landing.PNG)
+![Landing Page](src\screenshots\styled-screenshots\landing.PNG)
 
 **Register**
 
 As a user, I want to register and create my goals so I can start tracking my macros.
 
-![User Info Page](/src/screenshots/styled-screenshots/register.PNG)
+![User Info Page](src\screenshots\styled-screenshots\register.PNG)
 
-**Log in**
+**Sign in**
 
 As a user, I want to sign in so I can access my profile.
 
