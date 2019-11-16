@@ -54,7 +54,7 @@ Register a new user by providing a valid user with the following information
 
 **Example request**
 
-    fetch(“https://miguels-macro-tracker.now.sh/api/users”, {
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/users”, {
         method: ‘POST’,
         headers: {
             "content-type": "application/json",
@@ -89,7 +89,7 @@ Log in with valid credentials
 
 **Example request**
 
-    fetch(`https://miguels-macro-tracker.now.sh/api/auth/login`, {
+    fetch(`https://fast-gorge-81708.herokuapp.com/api/auth/login`, {
         method: "POST",
         headers: {
             "content-type": "application/json"
@@ -110,7 +110,7 @@ Get all the users meals by providing the user id
 
 **Example request:**
 
-    fetch(“https://miguels-macro-tracker.now.sh/api/meals”, {
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/meals”, {
         method: ‘GET’,
         headers: {
             authorization: ‘bearer [authorization token]’
@@ -157,7 +157,7 @@ New meals should include the following:
 
 **Example request**
 
-    fetch(“https://miguels-macro-tracker.now.sh/api/meals”, {
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/meals”, {
         method: ‘POST’,
         headers: {
             "content-type": "application/json",
@@ -172,7 +172,7 @@ Get users meal by meal id
 
 **Example request**
 
-    fetch(“https://miguels-macro-tracker.now.sh/api/meals/[meal-id]”, {
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/meals/[meal-id]”, {
         method: ‘GET’,
         headers: {
             authorization: ‘bearer [authorization token]’
@@ -197,7 +197,7 @@ Delete meal by providing the meal id
 
 **Example request**
 
-    fetch(“https://miguels-macro-tracker.now.sh/api/meals/[meal-id]”, {
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/meals/[meal-id]”, {
         method: ‘DELETE’,
         headers: {
             authorization: ‘bearer [authorization token]’
@@ -210,7 +210,7 @@ Update meal by providing the meal id and the new meal information in the body of
 
 \*_Example request_
 
-    fetch(“https://miguels-macro-tracker.now.sh/api/meals/[meal-id]”, {
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/meals/[meal-id]”, {
         method: ‘PATCH’,
         headers: {
             "content-type": "application/json",
@@ -225,7 +225,7 @@ Get meals for the current day by providing the users id
 
 **Example request**
 
-    fetch(“https://miguels-macro-tracker.now.sh/api/meals/[user-id]/today”, {
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/meals/[user-id]/today”, {
         method: ‘GET’,
         headers: {
             authorization: ‘bearer [authorization token]’
@@ -261,7 +261,7 @@ Get foods in meal by providing the meal id
 
 **Example request**
 
-    fetch(“https://miguels-macro-tracker.now.sh/api/meals/[meal-id]/foods”, {
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/meals/[meal-id]/foods”, {
         method: ‘GET’,
         headers: {
             authorization: ‘bearer [authorization token]’
@@ -312,7 +312,7 @@ Get all of the users logged foods
 
 **Example request**
 
-    fetch(“https://miguels-macro-tracker.now.sh/api/foods”, {
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/foods”, {
         method: ‘GET’,
         headers: {
             authorization: ‘bearer [authorization token]’
@@ -376,7 +376,7 @@ New meals should include the following:
 
 **Example Request**
 
-    fetch(“https://miguels-macro-tracker.now.sh/api/foods”, {
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/foods”, {
         method: ‘POST’,
         headers: {
             "content-type": "application/json",
@@ -391,7 +391,7 @@ Get food by providing the food id
 
 **Example Request**
 
-    fetch(“https://miguels-macro-tracker.now.sh/api/foods/[food-id]”, {
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/foods/[food-id]”, {
         method: ‘GET’,
         headers: {
             authorization: ‘bearer [authorization token]’
@@ -418,7 +418,7 @@ Delete foods by providing the id
 
 **Example Request**
 
-    fetch(“https://miguels-macro-tracker.now.sh/api/foods/[food-id]”, {
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/foods/[food-id]”, {
         method: ‘DELETE’,
         headers: {
             authorization: ‘bearer [authorization token]’
@@ -431,7 +431,7 @@ Update foods by providing the food id and the updated information in the body of
 
 **Example request**
 
-    fetch(“https://miguels-macro-tracker.now.sh/api/foods/[food-id]”, {
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/foods/[food-id]”, {
         method: ‘PATCH’,
         headers: {
             "content-type": "application/json",
