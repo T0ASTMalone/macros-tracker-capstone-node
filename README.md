@@ -1,106 +1,461 @@
-# macros-tracker-capstone-client
+**MacroFy API Docs**
 
-The macros tracker allows you to track your macro nutrients (Proteins, Carbs, and Fats) throughout your day in order to meet your daily goals. By creating meals and adding them to your day you can see the total macros you have eaten and how many you have left.
+An api for calculating a users daily macro nutrients and logging user foods and meals and keep track of their food intake from day to day.
 
-## API Documents
+Responds with JSON
 
-To view API Documentation head to [apidocs.md](apidocs.md) file
+**Authentication**
 
-## Website
+- json web tokens
 
-The website is a Heroku/Zeit application and may take a minute to start up when logging in.
+**POST /users**
 
-url: https://miguels-macro-tracker.now.sh/
+A users macors are calculated using the following information using the Mifflin-St. Jeor equation:
 
-Demo User:
+    Men: calories/day = 10 x weight (kg) + 6.25 x height (cm) – 5 x age (y) + 5
+    Women: calories/day = 10 x weight (kg) + 6.25 x height (cm) – 5 x age (y) – 161
 
-email:
-notanemail@gmail.com
+Register a new user by providing a valid user with the following information
 
-password:
-ThisIsJust@TestPassword1
+    const newUser = {
+        email: "example@email.com" ,
+        password: "examplePassword1!,
+        age: 24,
+        gender: "male",
+        height: 172, *
+        weight: 77.11, *
+        goals: "gain",
+        activity_lvl: "1.2" *
+    };
 
-## Site map
+\*Height should be converted to cm and weight to kg
 
----
+\*Activity level should be one of the following values:
 
-url: https://www.gloomaps.com/JKGJNe7Aqb
+- 1.2 (Sedentary)
 
-![Site Map](src\screenshots\macros-tracker-sitemap.png)
+  Little or no exercise, desk job
 
-## User Stories
+- 1.375 (Lightly active)
 
----
+  Light exercise/sports 1-3 days/week
 
-**Home**
+- 1.55 (Moderately active)
 
-As a user, I want to find out what the site is about.
+  Moderate exercise/sports 6-7 days
 
-![Landing Page](src\screenshots\styled-screenshots\landing.PNG)
+- 1.725 (Very Active)
 
-**Register**
+  Hard exercise every day, or 2 xs/day
 
-As a user, I want to register and create my goals so I can start tracking my macros.
+- 1.9 (Extra active)
 
-![User Info Page](src\screenshots\styled-screenshots\register.PNG)
+  Hard exercise 2 or more times per day
 
-**Sign in**
+**Example request**
 
-As a user, I want to sign in so I can access my profile.
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/users”, {
+        method: ‘POST’,
+        headers: {
+            "content-type": "application/json",
+        }
+        body: JSON.stringify(newUser),
+    });
 
-![Sign in Page](src\screenshots\styled-screenshots\sign-in.PNG)
+**Example response**
 
-**Dashboard**
+    {
+        user_id: 1,
+        email: "example@email.com" ,
+        age: 24,
+        gender: "male",
+        height: 172,
+        weight: 77.11,
+        goals: "gain",
+        activity_lvl: "1.2"
+        macros:
+            {
+                protein: 170,
+                carbs: 300,
+                fats: 68
+            }
+    }
 
-As a user, I want to see my current goals and my progress so far.
+Macro nutrients are in grams
 
-![Dashboard Page](src\screenshots\styled-screenshots\dashboard.PNG)
+**POST auth/login**
 
-**Add Meal**
+Log in with valid credentials
 
-As a user, I want to add a meal to my day so that I can track my macros.
+**Example request**
 
-![Create Meal Page](src\screenshots\styled-screenshots\create-food.PNG)
+    fetch(`https://fast-gorge-81708.herokuapp.com/api/auth/login`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json"
+        },
+        body: JSON.stringify(credentials)
+    });
 
-**Add Food**
+Credentials should contain the following:
 
-As a user, I want to add a food to my meal.
+    const credentials = {
+        email: "valid@email.com",
+        password: "validPassword1!"
+    };
 
-![Add Food Page](src\screenshots\styled-screenshots\create-food.PNG)
+**GET /meals**
 
-**Food log**
+Get all the users meals by providing the user id
 
-As a user, I want to see the foods that I have logged.
+**Example request:**
 
-![Food Log Page](src\screenshots\styled-screenshots\food-log.PNG)
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/meals”, {
+        method: ‘GET’,
+        headers: {
+            authorization: ‘bearer [authorization token]’
+        },
+        user: [user id],
+    });
 
-**Meal log**
+**Example response:**
 
-As a user, I want to see the meals that I have logged.
+    [
+        {
+            carbs: "58"
+            date_added: "2019-11-09T17:11:02Z"
+            fats: "1"
+            meal_id: 84
+            meal_name: "example meal"
+            protein: "20"
+            user_id: 5
+        },
+        {
+            carbs: "60"
+            date_added: "2019-11-09T02:19:38Z"
+            fats: "0"
+            meal_id: 83
+            meal_name: "example meal 2"
+            protein: "0"
+            user_id: 5
+        }
+    ]
 
-![Food Log Page](src\screenshots\styled-screenshots\meal-log.PNG)
+**POST /meals**
 
-## Technical
+Post new meal to users log
 
----
+New meals should include the following:
 
-MacroFy was built with:
+    const newMeal = {
+        user_id,
+        meal_name,
+        protein,
+        carbs,
+        fats
+    };
 
-#### Front End
+**Example request**
 
-- HTML5
-- CSS3
-- JavaScript
-- ReactJS
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/meals”, {
+        method: ‘POST’,
+        headers: {
+            "content-type": "application/json",
+            authorization: ‘bearer [authorization token]’
+        },
+        body: JSON.stringify([meal])
+    });
 
-#### Back End
+**GET /meals/:meal-id**
 
-- Node.js
-- Express.js
-- PostgreSQL
-- Mocha and Chai for testing
+Get users meal by meal id
 
-## Development Road Map
+**Example request**
 
-- Add workout tracker
-- Add search and filter options to food/meal log
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/meals/[meal-id]”, {
+        method: ‘GET’,
+        headers: {
+            authorization: ‘bearer [authorization token]’
+        }
+    });
+
+**Example response:**
+
+    {
+        carbs: "60"
+        date_added: "2019-11-09T02:19:38Z"
+        fats: "0"
+        meal_id: 83
+        meal_name: "example meal 2"
+        protein: "0"
+        user_id: 5
+    }
+
+**DELETE /meals/:meal-id**
+
+Delete meal by providing the meal id
+
+**Example request**
+
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/meals/[meal-id]”, {
+        method: ‘DELETE’,
+        headers: {
+            authorization: ‘bearer [authorization token]’
+        }
+    });
+
+**PATCH /meals/meal-id**
+
+Update meal by providing the meal id and the new meal information in the body of the request
+
+\*_Example request_
+
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/meals/[meal-id]”, {
+        method: ‘PATCH’,
+        headers: {
+            "content-type": "application/json",
+            authorization: ‘bearer [authorization token]’
+        },
+        body: JSON.stringify([updated-meal]),
+    });
+
+**GET /user-id/today**
+
+Get meals for the current day by providing the users id
+
+**Example request**
+
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/meals/[user-id]/today”, {
+        method: ‘GET’,
+        headers: {
+            authorization: ‘bearer [authorization token]’
+        }
+    });
+
+**Example response:**
+
+    [
+        {
+            carbs: "58"
+            date_added: "2019-11-09T17:11:02Z"
+            fats: "1"
+            meal_id: 84
+            meal_name: "example meal"
+            protein: "20"
+            user_id: 5
+        },
+        {
+            carbs: "60"
+            date_added: "2019-11-09T02:19:38Z"
+            fats: "0"
+            meal_id: 83
+            meal_name: "example meal 2"
+            protein: "0"
+            user_id: 5
+        }
+    ]
+
+**GET /meals/:meal-id/foods**
+
+Get foods in meal by providing the meal id
+
+**Example request**
+
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/meals/[meal-id]/foods”, {
+        method: ‘GET’,
+        headers: {
+            authorization: ‘bearer [authorization token]’
+        }
+    });
+
+**Example response:**
+
+    [
+        {
+            carbs: "12",
+            date_added: "2019-11-09T00:08:59Z",
+            fats: "0.5",
+            food_name: "Sunbeam White Bread Ranch",
+            id: 150,
+            meal_id: 82,
+            protein: "2",
+            servings: "2",
+            user_id: 5
+        },
+        {
+            carbs: "0",
+            date_added: "2019-11-09T00:08:59Z",
+            fats: "7",
+            food_name: "Peanut Butter & Co. Mighty Maple Peanut Butter, 16 (Pack of 6)",
+            id: 151,
+            meal_id: 82,
+            protein: "3",
+            servings: "2",
+            user_id: 5
+        },
+        {
+            carbs: "12",
+            date_added: "2019-11-09T00:08:59Z",
+            fats: "0",
+            food_name: "Spreads Jam - Concord Grape",
+            id: 152,
+            meal_id: 82,
+            protein: "0",
+            servings: "1",
+            user_id: 5
+        }
+    ]
+
+**GET /foods**
+
+Get all of the users logged foods
+
+**Example request**
+
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/foods”, {
+        method: ‘GET’,
+        headers: {
+            authorization: ‘bearer [authorization token]’
+        },
+        user: [user id],
+    });
+
+**Example response:**
+
+    [
+        {
+            carbs: "12",
+            date_added: "2019-11-09T00:08:59Z",
+            fats: "0.5",
+            food_name: "Sunbeam White Bread Ranch",
+            id: 150,
+            meal_id: 82,
+            protein: "2",
+            servings: "2",
+            user_id: 5
+        },
+        {
+            carbs: "0",
+            date_added: "2019-11-09T00:08:59Z",
+            fats: "7",
+            food_name: "Peanut Butter & Co. Mighty Maple Peanut Butter, 16 of (Pack of 6)",
+            id: 151,
+            meal_id: 82,
+            protein: "3",
+            servings: "2",
+            user_id: 5
+        },
+        {
+            carbs: "12",
+            date_added: "2019-11-09T00:08:59Z",
+            fats: "0",
+            food_name: "Spreads Jam - Concord Grape",
+            id: 152,
+            meal_id: 82,
+            protein: "0",
+            servings: "1",
+            user_id: 5
+        }
+    ]
+
+**POST /foods**
+
+Post new foods to users log
+
+New meals should include the following:
+
+    const newFood = {
+        user_id: 1,
+        meal_id: 1,
+        food_name: "example food",
+        protein: 0,
+        carbs: 2,
+        fats: 3,
+        servings: 1
+    };
+
+**Example Request**
+
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/foods”, {
+        method: ‘POST’,
+        headers: {
+            "content-type": "application/json",
+            authorization: ‘bearer [authorization token]’
+        },
+        body: JSON.stringify([new-food])
+    });
+
+**GET /foods/food-id**
+
+Get food by providing the food id
+
+**Example Request**
+
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/foods/[food-id]”, {
+        method: ‘GET’,
+        headers: {
+            authorization: ‘bearer [authorization token]’
+        }
+    });
+
+**Example response**
+
+    {
+        carbs: "12",
+        date_added: "2019-11-09T00:08:59Z",
+        fats: "0",
+        food_name: "Spreads Jam - Concord Grape",
+        id: 152,
+        meal_id: 82,
+        protein: "0",
+        servings: "1",
+        user_id: 5
+    }
+
+**DELETE /foods/food-id**
+
+Delete foods by providing the id
+
+**Example Request**
+
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/foods/[food-id]”, {
+        method: ‘DELETE’,
+        headers: {
+            authorization: ‘bearer [authorization token]’
+        }
+    });
+
+**PATCH /foods/food-id**
+
+Update foods by providing the food id and the updated information in the body of the request
+
+**Example request**
+
+    fetch(“https://fast-gorge-81708.herokuapp.com/api/foods/[food-id]”, {
+        method: ‘PATCH’,
+        headers: {
+            "content-type": "application/json",
+            authorization: ‘bearer [authorization token]’
+        }
+        body: JSON.stringify([updated-food]),
+    });
+
+**Response codes**
+
+The API uses the following standard response codes.
+
+- "500 - Internal Server Error"
+
+GET requests
+
+- "200 - Ok"
+
+POST requests
+
+- "201 - Created"
+- "400 - Bad Request"
+- "204 - No Content"
+
+PATCH requests
+
+- "200 - Ok"
